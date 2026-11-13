@@ -1,0 +1,147 @@
+{
+  "_about": "Mammal profiles. Units and segment format are described in classes.json. 'inherits' copies another profile and overrides only what is listed, which is how breeds are made.",
+
+  "mammal": {
+    "inherits": "tetrapod", "class": "mammal", "stance": "digitigrade", "posture": "erect",
+    "trunk": {"hip_at": 0.50},
+    "fore": [["humerus", 0.30, -35, 0], ["radius", 0.33, 5, 0], ["metacarpus", 0.12, -2, 0]],
+    "hind": [["femur", 0.33, 22, 0], ["tibia", 0.34, -32, 0], ["metatarsus", 0.20, 4, 0]]
+  },
+  "quadruped": {"inherits": "mammal"},
+
+  "canid": {
+    "inherits": "mammal",
+    "trunk": {"chest_depth": 0.42, "chest_width": 0.27, "tuck": 0.30},
+    "neck": {"length": 0.40, "angle": 34, "thick": 1.1},
+    "head": {"skull": 0.25, "muzzle": 0.21, "width": 0.20, "muzzle_width": 0.095, "depth": 0.19},
+    "tail": {"length": 0.55, "radius": 0.035, "angle": 60, "curl": 0.5},
+    "ears": {"type": "pointed", "size": 0.10}
+  },
+  "wolf": {
+    "inherits": "canid", "color": "#6a6a6e",
+    "trunk": {"chest_depth": 0.45, "tuck": 0.32},
+    "limb": {"fore_scale": 1.10, "hind_scale": 1.10},
+    "neck": {"thick": 1.25, "angle": 30},
+    "tail": {"style": "bushy", "radius": 0.085, "length": 0.60},
+    "features": {"belly": 0.40}
+  },
+  "dog": {"inherits": "canid", "color": "#a9743f", "ears": {"type": "floppy", "size": 0.12},
+          "head": {"muzzle": 0.18}},
+  "greyhound": {
+    "inherits": "dog", "color": "#b9b3a8",
+    "trunk": {"chest_depth": 0.50, "chest_width": 0.24, "tuck": 0.62},
+    "limb": {"fore_scale": 1.25, "hind_scale": 1.25, "thick": 0.80},
+    "neck": {"length": 0.50, "thick": 0.85, "angle": 44},
+    "head": {"skull": 0.23, "muzzle": 0.26, "width": 0.15, "muzzle_width": 0.075, "depth": 0.15},
+    "tail": {"length": 0.75, "radius": 0.022}
+  },
+  "dachshund": {
+    "inherits": "dog", "color": "#7a4a28",
+    "trunk": {"chest_depth": 0.36, "chest_width": 0.26, "tuck": 0.18},
+    "limb": {"fore_scale": 0.38, "hind_scale": 0.38, "thick": 0.95, "foot_h": 0.035},
+    "neck": {"length": 0.30, "angle": 40},
+    "head": {"muzzle": 0.22},
+    "ears": {"type": "floppy", "size": 0.14},
+    "limits": {"leg_to_trunk": [0.12, 1.35]}
+  },
+  "fox": {
+    "inherits": "canid", "color": "#c4622d",
+    "trunk": {"chest_depth": 0.36, "chest_width": 0.22},
+    "limb": {"fore_scale": 0.85, "hind_scale": 0.85, "thick": 0.85},
+    "head": {"muzzle": 0.22, "muzzle_width": 0.075, "width": 0.19},
+    "tail": {"style": "bushy", "radius": 0.10, "length": 0.80},
+    "ears": {"size": 0.14},
+    "features": {"belly": 0.75}
+  },
+
+  "felid": {
+    "inherits": "mammal",
+    "trunk": {"chest_depth": 0.40, "chest_width": 0.26, "tuck": 0.18},
+    "fore": [["humerus", 0.30, -30, 0], ["radius", 0.30, 5, 0], ["metacarpus", 0.10, -2, 0]],
+    "hind": [["femur", 0.32, 24, 0], ["tibia", 0.33, -36, 0], ["metatarsus", 0.18, 4, 0]],
+    "neck": {"length": 0.24, "angle": 40},
+    "head": {"skull": 0.25, "muzzle": 0.08, "width": 0.24, "muzzle_width": 0.11, "depth": 0.21, "angle": -4},
+    "tail": {"length": 0.85, "radius": 0.026, "angle": 50, "curl": 0.8}
+  },
+  "cat": {"inherits": "felid", "color": "#8a8580", "limb": {"thick": 0.90}, "features": {"belly": 0.25}},
+  "lion": {
+    "inherits": "felid", "color": "#c79a4f",
+    "trunk": {"chest_depth": 0.46, "chest_width": 0.31, "tuck": 0.20},
+    "limb": {"thick": 1.20},
+    "neck": {"length": 0.30, "angle": 32, "thick": 1.2},
+    "head": {"skull": 0.30, "muzzle": 0.13, "width": 0.28, "muzzle_width": 0.15, "depth": 0.25},
+    "ears": {"type": "round", "size": 0.08},
+    "features": {"belly": 0.20, "mane": "lion"}
+  },
+
+  "ursid": {
+    "inherits": "mammal", "stance": "plantigrade",
+    "trunk": {"chest_depth": 0.58, "chest_width": 0.46, "tuck": 0.0, "hump": 0.12, "shoulder_at": 0.70, "hip_at": 0.55},
+    "fore": [["humerus", 0.30, -25, 0], ["radius", 0.28, 4, 0]],
+    "hind": [["femur", 0.32, 22, 0], ["tibia", 0.26, -22, 0]],
+    "limb": {"thick": 1.15, "foot_len": 0.20, "foot_h": 0.06},
+    "neck": {"length": 0.20, "angle": 18, "thick": 1.4},
+    "head": {"skull": 0.30, "muzzle": 0.16, "width": 0.28, "muzzle_width": 0.13, "depth": 0.25, "angle": -14, "muzzle_taper": 0.8},
+    "tail": {"length": 0.08, "radius": 0.04, "angle": 40},
+    "ears": {"type": "round", "size": 0.08},
+    "features": {"belly": null}
+  },
+  "bear": {"inherits": "ursid", "color": "#4a3526"},
+
+  "equid": {
+    "inherits": "mammal", "stance": "unguligrade",
+    "trunk": {"chest_depth": 0.55, "chest_width": 0.36, "tuck": 0.10, "shoulder_at": 0.72, "hip_at": 0.58},
+    "fore": [["humerus", 0.22, -45, 0], ["radius", 0.31, 4, 0], ["cannon", 0.185, -1, 0], ["pastern", 0.09, 35, 0]],
+    "hind": [["femur", 0.28, 30, 0], ["tibia", 0.30, -30, 0], ["cannon", 0.20, 4, 0], ["pastern", 0.09, 32, 0]],
+    "limb": {"thick": 0.92, "foot_len": 0.07, "foot_h": 0.05, "upper_mass": 1.35},
+    "neck": {"length": 0.62, "angle": 45, "thick": 1.40},
+    "head": {"skull": 0.30, "muzzle": 0.30, "width": 0.18, "muzzle_width": 0.13, "depth": 0.23, "angle": -38, "muzzle_taper": 0.88},
+    "tail": {"length": 0.75, "radius": 0.05, "angle": 80, "curl": 0.1, "style": "hair"},
+    "ears": {"type": "pointed", "size": 0.09},
+    "features": {"belly": null, "mane": "horse", "hooves": true}
+  },
+  "horse": {"inherits": "equid", "color": "#6b4226"},
+
+  "cervid": {
+    "inherits": "mammal", "stance": "unguligrade",
+    "trunk": {"chest_depth": 0.44, "chest_width": 0.26, "tuck": 0.22, "shoulder_at": 0.70, "hip_at": 0.55},
+    "fore": [["humerus", 0.22, -42, 0], ["radius", 0.34, 4, 0], ["cannon", 0.24, -1, 0], ["pastern", 0.08, 35, 0]],
+    "hind": [["femur", 0.28, 30, 0], ["tibia", 0.34, -32, 0], ["cannon", 0.27, 4, 0], ["pastern", 0.08, 32, 0]],
+    "limb": {"thick": 0.72, "foot_len": 0.06, "foot_h": 0.045, "upper_mass": 1.3},
+    "neck": {"length": 0.50, "angle": 58, "thick": 0.95},
+    "head": {"skull": 0.23, "muzzle": 0.20, "width": 0.16, "muzzle_width": 0.08, "depth": 0.17, "angle": -24},
+    "tail": {"length": 0.10, "radius": 0.035, "angle": 30},
+    "ears": {"type": "pointed", "size": 0.13},
+    "features": {"belly": 0.55, "hooves": true}
+  },
+  "deer": {"inherits": "cervid", "color": "#a8763e", "features": {"horns": "antlers"}},
+
+  "bovid": {
+    "inherits": "mammal", "stance": "unguligrade",
+    "trunk": {"chest_depth": 0.58, "chest_width": 0.42, "tuck": 0.0, "shoulder_at": 0.72, "hip_at": 0.55},
+    "fore": [["humerus", 0.22, -42, 0], ["radius", 0.26, 4, 0], ["cannon", 0.15, -1, 0], ["pastern", 0.07, 30, 0]],
+    "hind": [["femur", 0.26, 28, 0], ["tibia", 0.25, -30, 0], ["cannon", 0.19, 4, 0], ["pastern", 0.07, 30, 0]],
+    "limb": {"thick": 0.90, "foot_len": 0.07, "foot_h": 0.05, "upper_mass": 1.4},
+    "neck": {"length": 0.35, "angle": 15, "thick": 1.3},
+    "head": {"skull": 0.28, "muzzle": 0.22, "width": 0.21, "muzzle_width": 0.15, "depth": 0.23, "angle": -28, "muzzle_taper": 0.92},
+    "tail": {"length": 0.65, "radius": 0.02, "angle": 82, "curl": 0.05},
+    "ears": {"type": "floppy", "size": 0.11},
+    "features": {"belly": null, "horns": "cow", "hooves": true}
+  },
+  "cow": {"inherits": "bovid", "color": "#e8e2d8"},
+
+  "suid": {
+    "inherits": "mammal", "stance": "unguligrade", "surface": "skin",
+    "trunk": {"chest_depth": 0.52, "chest_width": 0.42, "tuck": 0.0, "shoulder_at": 0.70, "hip_at": 0.55},
+    "fore": [["humerus", 0.16, -40, 0], ["radius", 0.15, 4, 0], ["cannon", 0.07, -1, 0], ["pastern", 0.04, 30, 0]],
+    "hind": [["femur", 0.18, 28, 0], ["tibia", 0.17, -30, 0], ["cannon", 0.09, 4, 0], ["pastern", 0.04, 30, 0]],
+    "limb": {"thick": 0.75, "foot_len": 0.05, "foot_h": 0.04, "upper_mass": 1.3},
+    "neck": {"length": 0.15, "angle": 8, "thick": 1.5},
+    "head": {"skull": 0.30, "muzzle": 0.20, "width": 0.24, "muzzle_width": 0.14, "depth": 0.24, "angle": -8, "muzzle_taper": 1.0},
+    "tail": {"length": 0.10, "radius": 0.02, "angle": 20},
+    "ears": {"type": "floppy", "size": 0.11},
+    "features": {"belly": null, "hooves": true},
+    "limits": {"leg_to_trunk": [0.15, 1.35]}
+  },
+  "pig": {"inherits": "suid", "color": "#e3a6a0"}
+}

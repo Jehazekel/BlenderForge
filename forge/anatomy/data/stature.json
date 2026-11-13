@@ -1,0 +1,19 @@
+{
+  "_about": "Hand-maintained. Standing shoulder height as a fraction of head-body length, used to scale the limb chains of the exact profile named (never inherited). Unlike measured.json these are SECONDARY sources: published field ranges in cm, not specimen measurements. 'ratio' is the midpoint of shoulder_cm over the midpoint of head_body_cm from the same source, or the mean of the listed pairs. Retrieved 2026-11-12. Replace with specimen data (limb bone lengths) when available. Pig is deliberately absent: the only figures found were wild boar maxima, which made the domestic pig profile look stilted.",
+
+  "_stature": {
+    "wolf": {"taxon": "Canis lupus", "shoulder_cm": [66, 81], "head_body_cm": [100, 150], "ratio": 0.59,
+             "source": "Safari Club International, Family Canidae (males)", "url": "https://safariclub.org/canines/"},
+    "fox": {"taxon": "Vulpes vulpes", "shoulder_cm": [35, 46], "head_body_cm": [56, 86], "ratio": 0.57,
+            "source": "Dimensions.com, Red Fox", "url": "https://www.dimensions.com/element/red-fox",
+            "note": "sources disagree widely on red fox size"},
+    "lion": {"taxon": "Panthera leo", "shoulder_cm": [107, 123], "head_body_cm": [175, 211], "ratio": 0.60,
+             "source": "San Diego Zoo Wildlife Alliance Library, Lion fact sheet (female and male pairs; head-body values are range midpoints)",
+             "url": "https://ielc.libguides.com/sdzg/factsheets/lions/characteristics"},
+    "bear": {"taxon": "Ursus arctos", "shoulder_cm": [70, 153], "head_body_cm": [140, 280], "ratio": 0.53,
+             "source": "Biodiversity4All, Brown Bear", "url": "https://biodiversity4all.org/guide_taxa/889098",
+             "note": "very wide ranges across populations"},
+    "deer": {"taxon": "Cervus elaphus", "shoulder_cm": [114, 122], "head_body_cm": [180, 201], "ratio": 0.62,
+             "source": "Wikipedia, Red deer (Scottish hind and stag averages)", "url": "https://en.wikipedia.org/wiki/Red_deer"}
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "_about": "Hand-maintained. Human body plan in stature units: 1.0 = standing height of the reference adult. The solver rescales the result to the requested height, so only ratios matter. 'cite' lists the sections whose numbers follow the cited table; 'depth', 'girth' (radii), breadth.waist, the two *_joint factors, trunk.crotch, trunk.waist_at and head.width/depth are approximations with no measured source, as are trunk.shoulder_drop (shoulder joint centre below the acromion), arm.rest_angle (degrees the arms hang below horizontal in the rest pose: an A-pose, which halves the shoulder bend of a T-pose; landmarks and measures are still reported for the T-pose) and the whole 'face', 'hair' and 'shape' blocks (each says so in its own '_about'). The cited values were entered from the commonly reproduced Drillis & Contini table (Winter, fig. 4.1) and have NOT been checked against the printed source; verify before relying on them. Presets that change proportions (child, giant) set 'cite' to null because the adult table does not apply to them.",
+
+  "_sources": {
+    "drillis_contini": {
+      "title": "Body Segment Parameters (segment lengths as a fraction of stature)",
+      "citation": "Drillis & Contini 1966, Report 1166-03, NYU School of Engineering and Science; as reproduced in Winter 2009, Biomechanics and Motor Control of Human Movement, 4th ed., fig. 4.1",
+      "license": "published table of averages, cite the source",
+      "units": "fraction of stature",
+      "level": "adult population averages; the sample is poorly documented and the ratios are known to fit children badly"
+    }
+  },
+
+  "humanoid": {
+    "plan": "biped",
+    "class": "human",
+    "cite": {"dataset": "drillis_contini", "verified": false, "taxon": "Homo sapiens (adult)", "values": ["arm", "breadth.chest", "breadth.hip", "breadth.shoulder", "head.eye_at", "head.height", "leg", "neck.length", "trunk.length"],
+             "raw": {"height_eye": 0.936, "height_chin": 0.870, "height_shoulder": 0.818, "height_chest": 0.720, "height_elbow": 0.630, "height_hip": 0.530, "height_wrist": 0.485, "height_fingertip": 0.377, "height_knee": 0.285, "height_ankle": 0.039},
+             "note": "segment lengths are differences of the landmark heights in 'raw'"},
+    "leg": {"thigh": 0.245, "shank": 0.246, "ankle_h": 0.039, "foot_len": 0.152, "foot_w": 0.055, "knee_fwd": 0.016},
+    "trunk": {"length": 0.288, "crotch": 0.060, "waist_at": 0.33, "chest_at": 0.66, "shoulder_drop": 0.020},
+    "neck": {"length": 0.052},
+    "head": {"height": 0.130, "width": 0.086, "depth": 0.108, "eye_at": 0.51, "forward": -0.006},
+    "face": {
+      "_about": "Approximation. Heights ('at') are fractions of head height from the chin (0) to the crown (1); widths are fractions of half the head width; 'f', 'b' and 'relief' are fractions of half the head depth. The layout follows the classical drawing canons (eyes at mid-head, the face in thirds hairline / brow / nose base / chin, mouth one third down the lower third, ear from brow to nose base, mouth about 0.8 of the pupil distance) adjusted towards remembered adult averages (pupil distance about 0.41 of head breadth, head breadth about 0.79 of head length). None of it was read from a table in this project; Farkas et al. 1985 found real faces depart from the canons, so treat these as a neutral starting face, not a likeness. rows: [name, at, width, front, back, relief per column]. columns: where the midline, nose wing, pupil and cheek lines sit across the half face. row_columns: a row's own columns where they differ (the nose wings flare to about 0.23 of the half breadth, alar width roughly a quarter of head breadth, approximation). The eye row's socket relief and eye_depth go together: the eyeball centre sits just behind the socket skin so brow and cheek stand proud of the lids. relief is extra forward depth on those columns: it models the nose, lips, chin, brow ridge and (negative) the eye sockets.",
+      "columns": [0.0, 0.17, 0.42, 0.74],
+      "power": 2.4,
+      "row_columns": {"nose_base": [0.0, 0.20, 0.42, 0.74], "nose_ala": [0.0, 0.24, 0.42, 0.74], "nose_tip": [0.0, 0.19, 0.42, 0.74]},
+      "rows": [
+        ["jaw",       0.030, 0.68, 0.74, 0.62, [0.02, 0.01, 0.0, 0.0]],
+        ["chin",      0.085, 0.70, 0.86, 0.64, [0.05, 0.035, 0.0, 0.0]],
+        ["crease",    0.135, 0.72, 0.88, 0.66, [-0.01, 0.0, 0.0, 0.0]],
+        ["lip_lo",    0.175, 0.74, 0.89, 0.70, [0.065, 0.05, 0.0, 0.0]],
+        ["mouth",     0.215, 0.77, 0.90, 0.76, [0.055, 0.04, -0.01, 0.0]],
+        ["lip_up",    0.250, 0.82, 0.90, 0.82, [0.075, 0.055, 0.0, 0.0]],
+        ["nose_base", 0.300, 0.87, 0.89, 0.90, [0.10, 0.07, 0.01, 0.0]],
+        ["nose_ala",  0.322, 0.89, 0.885, 0.925, [0.33, 0.20, 0.02, 0.0]],
+        ["nose_tip",  0.350, 0.91, 0.88, 0.95, [0.39, 0.13, 0.02, 0.01]],
+        ["nose_mid",  0.420, 0.95, 0.87, 0.98, [0.20, 0.02, 0.01, 0.02]],
+        ["eye",       0.510, 0.96, 0.88, 1.00, [0.04, -0.14, -0.20, -0.10]],
+        ["brow",      0.585, 0.98, 0.95, 1.00, [0.03, 0.04, 0.03, 0.0]],
+        ["forehead",  0.700, 0.97, 0.96, 0.98, [0.0, 0.0, 0.0, 0.0]],
+        ["hairline",  0.830, 0.88, 0.86, 0.90, [0.0, 0.0, 0.0, 0.0]],
+        ["top",       0.940, 0.60, 0.56, 0.62, [0.0, 0.0, 0.0, 0.0]]
+      ],
+      "lip_gap": 0.003, "lip_tint": [[0.80, 0.06], [0.55, 0.02], [0.55, 0.03]],
+      "nostril": [0.62, 0.014], "eye_r": 0.054, "eye_depth": 0.64, "lid_open": [18, -30],
+      "brow_up": -0.008, "brow_len": 0.42, "brow_thick": 0.60, "brow_raise": 0.030,
+      "ear_at": 0.45, "ear_out": 0.08, "ear_back": 0.10, "ear_thick": 0.18, "ear_depth": 0.42,
+      "jaw_hinge": [0.15, 0.40], "jaw_open": 13, "jaw_falloff": [1.0, 1.0, 1.0, 0.7, 0.25], "jaw_corner": 0.5
+    },
+    "hair": {"_about": "Approximation: how far down the skull the hair cap reaches (head-height fractions) at the back for each style, at the front hairline and at the temples; 'scale' is its thickness.",
+             "scale": 1.07, "short": 0.30, "long": 0.05, "front": 0.80, "side": 0.52, "long_drop": 0.35},
+    "shape": {"_about": "Approximation: how the torso cage is drawn between the measured landmarks. arm_gap = half height of the arm opening (stature units); crotch, shoulder_cap = [width, depth] of those sections relative to hip and chest; neck_base = [height between shoulder top and chin, width, depth relative to neck radius]; sway = how far behind the bone line each section sits (stature units, + is back): buttocks back, chest forward; square = superellipse power of the torso sections; weight_smooth = smoothing passes over the automatic skin weights (softer joint creases).",
+              "arm_gap": 0.030, "crotch": [0.92, 0.92], "crotch_drop": 0.014, "chest_min": 0.90, "shoulder_cap": [0.88, 0.76],
+              "neck_base": [0.40, 1.45, 1.05], "square": 0.85, "weight_smooth": 3,
+              "sway": {"crotch": 0.006, "pelvis": 0.008, "waist": 0.002, "chest": -0.004, "neck": 0.004}},
+    "arm": {"upper": 0.188, "fore": 0.145, "hand": 0.108, "rest_angle": 40},
+    "hand": {"_about": "Approximation (no measured source). palm = palm length / hand length; palm_w and palm_t are half breadth and half thickness in stature units; fingers = index, middle, ring, little length relative to the middle finger; thumb = thumb length / middle finger length; thumb_at = where the thumb leaves the palm, as a fraction of palm length; finger_r = finger radius / palm half breadth.",
+             "palm": 0.55, "palm_w": 0.026, "palm_t": 0.011, "fingers": [0.90, 1.0, 0.93, 0.74], "finger_r": 0.23,
+             "thumb": 0.75, "thumb_at": 0.35, "thumb_out": 56},
+    "joint_loop": 0.16,
+    "breadth": {"shoulder": 0.259, "chest": 0.174, "waist": 0.160, "hip": 0.191, "shoulder_joint": 0.76, "hip_joint": 0.52},
+    "depth": {"chest": 0.128, "waist": 0.110, "hip": 0.126},
+    "girth": {"thigh": 0.047, "knee": 0.032, "calf": 0.032, "ankle": 0.021, "upper_arm": 0.027, "elbow": 0.022, "wrist": 0.016, "neck": 0.029},
+    "defaults": {}
+  },
+
+  "human": {"inherits": "humanoid"},
+  "man": {"inherits": "humanoid"},
+  "woman": {
+    "_about": "Approximation: the adult table narrowed at the shoulder and waist and widened at the hip, with lighter limbs. No measured source, so 'cite' is null.",
+    "inherits": "humanoid",
+    "cite": null,
+    "defaults": {"height": "1.65", "hair": "long"},
+    "breadth": {"shoulder": 0.240, "chest": 0.164, "waist": 0.146, "hip": 0.204},
+    "depth": {"chest": 0.124, "waist": 0.104, "hip": 0.128},
+    "girth": {"thigh": 0.047, "knee": 0.030, "calf": 0.030, "ankle": 0.019, "upper_arm": 0.024, "elbow": 0.020, "wrist": 0.014, "neck": 0.025}
+  },
+  "biped": {"inherits": "humanoid"},
+  "knight": {"inherits": "humanoid", "defaults": {"build": "muscular", "outfit": "armor"}},
+  "villager": {"inherits": "humanoid", "defaults": {"outfit": "tunic"}},
+  "wizard": {"inherits": "humanoid", "defaults": {"build": "slim", "outfit": "robe", "accessories": "hat, staff"}},
+
+  "child": {
+    "inherits": "humanoid",
+    "cite": null,
+    "defaults": {"height": "1.15", "build": "slim"},
+    "leg": {"thigh": 0.225, "shank": 0.225},
+    "neck": {"length": 0.045},
+    "head": {"height": 0.170, "width": 0.118, "depth": 0.138},
+    "limits": {"head_to_stature": [0.14, 0.20], "leg_to_stature": [0.44, 0.54], "fingertip_height": [0.28, 0.42]}
+  },
+
+  "giant": {
+    "inherits": "humanoid",
+    "cite": null,
+    "defaults": {"height": "3.2", "build": "heavy"},
+    "head": {"height": 0.112, "width": 0.080, "depth": 0.093},
+    "limits": {"head_to_stature": [0.09, 0.15]}
+  }
+}

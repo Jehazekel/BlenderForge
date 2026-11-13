@@ -1,0 +1,141 @@
+Best resources for actual 3D animal models and anatomy
+
+These may be even more valuable than measurement databases because you can inspect real animal specimens, extract landmarks, and measure geometry directly.
+
+These 10 psychedelic animal scans will change how you see wildlife forever | BBC Science Focus Magazine
+
+Best overall for animal diversity1. oVert – openVertebrate
+
+- More than 13,000 specimens.
+- More than 6,400 genera.
+- Fish, amphibians, reptiles and mammals, with some other vertebrate groups.
+- CT scans and digital anatomical data.
+
+Particularly valuable for extracting real skeletal proportions and anatomical landmarks.
+
+[Project and dataset research](<https://pmc.ncbi.nlm.nih.gov/articles/PMC10977868/?utm_source=chatgpt.com>) · [Browse scans in MorphoSource](<https://www.morphosource.org/?utm_source=chatgpt.com>)
+
+PubMed Central (PMC)
+
++1
+
+Looking Ahead to MorphoSource 2.0 - Bitstreams: The Digital Collections Blog
+
+Best general 3D specimen repository2. MorphoSource
+
+- 3D surface meshes.
+- CT and micro-CT scans.
+- Photogrammetry.
+- Museum specimen imagery.
+- Many vertebrate groups.
+
+Search for specific animals and anatomical structures, then download accessible specimens.
+
+[Explore MorphoSource](<https://www.morphosource.org/?utm_source=chatgpt.com>) · [Repository overview and access information](<https://www.tandfonline.com/doi/full/10.1080/03122417.2024.2350098?utm_source=chatgpt.com>)
+
+Some downloads require permission, and licenses differ by specimen.
+
+Tiefe Blicke unter das Fell
+
+3. Digital Morphology Museum
+
+- CT and MRI scans.
+- Mammalian and primate anatomy.
+- Internal skeletal structures.
+- Anatomical visualization.
+
+Particularly useful for studying bone proportions and internal anatomical relationships.
+
+[Find the Digital Morphology Museum through the morphometric resource directory](<https://sbmorphometrics.org/data/datasets.html?utm_source=chatgpt.com>)
+
+Artic Hare (Lepus arcticus), Right Humerus - 3D model by UWLzooarch (@UWLArch) \[bc08132\] - Sketchfab
+
+4. Virtual Zooarchaeology of the Arctic Project (VZAP)
+
+- Bird skeletons.
+- Mammal skeletons.
+- Fish skeletons.
+- 2D and 3D skeletal references.
+
+Useful for identifying corresponding skeletal landmarks across different animals.
+
+[VZAP resource listing](<https://sbmorphometrics.org/data/datasets.html?utm_source=chatgpt.com>)
+
+A New Dimension in Primate Studies: Unveiling the Morphosource Dataset
+
+5. Primate Phenotypes
+
+- Over 6,000 3D scans.
+- 386 individual specimens.
+- Multiple primate groups.
+- Detailed skeletal morphology.
+
+Excellent for improving primate-specific anatomical templates.
+
+[Read the dataset paper](<https://www.nature.com/articles/s41597-024-04261-5?utm_source=chatgpt.com>) · [Access the 3D collection](<https://www.morphosource.org/projects/00000C706/?utm_source=chatgpt.com>)
+
+## 3. Resources specifically for estimating complete animal shape
+
+These are particularly relevant if your tool needs to estimate a complete animal mesh from a reference image or partial anatomical information.
+
+| Resource | Coverage | Why it matters |
+| --- | --- | --- |
+| [Animal3D](<https://openaccess.thecvf.com/content/ICCV2023/papers/Xu_Animal3D_A_Comprehensive_Dataset_of_3D_Animal_Pose_and_Shape_ICCV_2023_paper.pdf?utm_source=chatgpt.com>) | 40 mammal species, 3,379 images | 3D animal pose and shape estimation |
+| [3D bird geometric morphometrics](<https://www.morphomuseum.com/articles/view/125?utm_source=chatgpt.com>) | 149 bird taxa | 3D skeletal landmarks across head, trunk and limbs |
+| [MorphoRegions](<https://cran.ma.imperial.ac.uk/web/packages/MorphoRegions/vignettes/MorphoRegions.html?utm_source=chatgpt.com>) | Alligator, mouse, dolphin, seal, wolves and more | Comparative vertebral shape and landmark analysis |
+| [Comparative vertebrate body-shape study](<https://livrepository.liverpool.ac.uk/3155045/1/200752327_DEC2021.pdf?utm_source=chatgpt.com>) | 410 species, including living and extinct vertebrates | Comparative body dimensions derived from 3D skeletal models |
+
+The comparative vertebrate study is particularly interesting: it includes 116 amphibians, 47 birds, 55 non-avian dinosaurs, 143 mammals, 46 non-avian reptiles and 3 reptiliomorphs. It provides a useful starting point for cross-species body-shape estimation.
+
+Liverpool Repository
+
+## 4\. My ranking for your particular tool
+
+If the objective is to estimate realistic animal proportions and generate Blender models, this is how I would prioritize the resources:
+
+| Rank | Resource | Primary purpose |
+| --- | --- | --- |
+| 1 | oVert | Broad anatomical reference across vertebrates |
+| 2 | MorphoSource | Actual 3D animal specimens |
+| 3 | AVONET | Quantitative bird proportions |
+| 4 | FishShapes | Quantitative fish proportions |
+| 5 | Animal3D | Image-based animal shape estimation |
+| 6 | VZAP | Comparative skeletal anatomy |
+| 7 | PanTHERIA | Broad mammalian measurements |
+| 8 | FISHMORPH | Fish species proportions |
+
+## 5\. How I would use these resources
+
+I would build your tool around three complementary reference layers:
+
+Layer 1 — Species measurements
+
+Use AVONET, FishShapes, FishBase and PanTHERIA.
+
+Purpose: Establish realistic dimensions, ratios and expected variation.
+
+Layer 2 — Actual 3D anatomy
+
+Use oVert, MorphoSource and VZAP.
+
+Purpose: Extract skeletal structures, landmarks, body geometry and spatial relationships.
+
+Layer 3 — Shape estimation
+
+Use Animal3D and comparative geometric morphometrics.
+
+Purpose: Estimate shape from images, compare silhouettes and improve procedural geometry.
+
+One important consideration: many 3D specimen repositories contain skeletons rather than complete external animal bodies. You'll need external morphology references as well to estimate muscles, skin, feathers, fur and other soft-tissue features.
+
+## 6\. Additional search resource
+
+A useful directory for discovering more datasets is:
+
+- [SB Morphometrics – Morphometric Dataset Directory](<https://sbmorphometrics.org/data/datasets.html?utm_source=chatgpt.com>) — includes specialized datasets and links to anatomical collections.
+- [Biological Records Centre – Species Trait Resources](<https://www.brc.ac.uk/theme/species-traits-links-data-and-resources?utm_source=chatgpt.com>) — provides links to additional animal trait databases.
+- [Open Traits Network](<https://opentraits.org/datasets.html?utm_source=chatgpt.com>) — searchable collection of species-level trait datasets.
+
+My strongest recommendation: Start with oVert + MorphoSource + AVONET + FishShapes. Together, they provide a strong foundation for developing an animal modeling system that uses actual biological specimens and scientific measurements rather than relying on arbitrary proportions.
+
+Also, preserve source attribution, measurement units, specimen identifiers and licensing information for every imported reference. This will make your anatomical database much more reliable and maintainable.

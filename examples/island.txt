@@ -1,0 +1,6 @@
+map: Island
+type: island  size: 70  height: 14  heightmap: island_heightmap.png  water: 0.18
+trees: 30  tree_type: palm  rocks: 10
+
+structure: Lighthouse
+type: lighthouse  floors: 5  radius: 2  position: 2, 4

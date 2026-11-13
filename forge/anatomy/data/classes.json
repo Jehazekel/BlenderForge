@@ -1,0 +1,54 @@
+{
+  "_about": "Class-level defaults and plausibility ranges. All lengths are in trunk units: 1.0 = distance from the shoulder joint to the hip joint. Limb segments are [name, length, angle, out]: angle is degrees from straight down (positive = far end forward), out is degrees of sideways splay. Values are approximations compiled from general comparative anatomy, not measured from specimens.",
+
+  "tetrapod": {
+    "plan": "tetrapod",
+    "trunk": {"chest_depth": 0.42, "chest_width": 0.27, "tuck": 0.25, "hump": 0.0, "hip_width": 0.90,
+              "shoulder_at": 0.62, "hip_at": 0.32, "rump": 0.16, "forechest": 0.12, "joint_x": 0.62},
+    "neck": {"length": 0.40, "angle": 36, "thick": 1.0, "set": 0.35},
+    "head": {"skull": 0.26, "muzzle": 0.20, "width": 0.20, "muzzle_width": 0.10, "depth": 0.20,
+             "angle": -8, "muzzle_taper": 0.67, "eye_size": 0.028, "eye_up": 0.30, "eye_out": 0.50, "eye_at": 0.63},
+    "limb": {"thick": 1.0, "foot_len": 0.10, "foot_h": 0.05, "fore_scale": 1.0, "hind_scale": 1.0,
+             "upper_mass": 1.0},
+    "tail": {"length": 0.60, "radius": 0.035, "angle": 55, "curl": 0.6, "style": "plain"},
+    "ears": {"type": "pointed", "size": 0.10},
+    "features": {"belly": 0.3, "mane": null, "horns": null, "hooves": false},
+    "surface": "fur",
+    "color": "#6f6258"
+  },
+
+  "limits": {
+    "human": {
+      "head_to_stature": [0.115, 0.150], "neck_to_stature": [0.03, 0.08], "leg_to_stature": [0.48, 0.58],
+      "thigh_to_shank": [0.85, 1.15], "upper_to_forearm": [1.05, 1.50], "arm_span": [0.95, 1.15],
+      "fingertip_height": [0.32, 0.44], "shoulder_to_hip": [1.05, 1.75], "shoulder_width": [0.21, 0.33],
+      "foot_to_stature": [0.13, 0.17],
+      "eye_height": [0.44, 0.56], "eye_spacing": [0.36, 0.46], "mouth_to_eye_spacing": [0.65, 0.95],
+      "mid_face": [0.27, 0.40], "lower_face": [0.30, 0.42], "head_width_to_depth": [0.70, 0.90]
+    },
+    "mammal": {
+      "back_slope": [-9, 9], "head_to_trunk": [0.28, 0.80], "neck_to_trunk": [0.10, 0.80],
+      "chest_depth": [0.26, 0.66], "width_to_depth": [0.45, 1.05], "fore_to_hind_height": [0.80, 1.20],
+      "upper_to_lower_fore": [0.45, 1.50], "upper_to_lower_hind": [0.60, 1.45],
+      "leg_to_trunk": [0.25, 1.35], "limb_radius_to_depth": [0.05, 0.36], "tail_to_trunk": [0.0, 1.6]
+    },
+    "reptile": {
+      "back_slope": [-12, 12], "head_to_trunk": [0.25, 0.95], "neck_to_trunk": [0.05, 0.60],
+      "chest_depth": [0.12, 0.45], "width_to_depth": [0.80, 2.60], "fore_to_hind_height": [0.60, 1.30],
+      "upper_to_lower_fore": [0.60, 1.60], "upper_to_lower_hind": [0.60, 1.60],
+      "leg_to_trunk": [0.08, 0.60], "limb_radius_to_depth": [0.08, 0.50], "tail_to_trunk": [0.3, 2.6]
+    },
+    "amphibian": {
+      "back_slope": [-25, 25], "head_to_trunk": [0.35, 1.10], "neck_to_trunk": [0.0, 0.25],
+      "chest_depth": [0.14, 0.60], "width_to_depth": [0.80, 2.40], "fore_to_hind_height": [0.50, 1.60],
+      "upper_to_lower_fore": [0.60, 1.60], "upper_to_lower_hind": [0.60, 1.60],
+      "leg_to_trunk": [0.06, 0.70], "limb_radius_to_depth": [0.08, 0.55], "tail_to_trunk": [0.0, 1.6]
+    }
+  },
+
+  "joint_rules": {
+    "_about": "Which way each joint must sit relative to the one above it for an upright (erect) limb. +1 = further forward, -1 = further back.",
+    "erect": {"fore": [-1, 1], "hind": [1, -1]},
+    "sprawl": {"fore": [], "hind": []}
+  }
+}

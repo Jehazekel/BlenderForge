@@ -1,0 +1,79 @@
+{
+  "_about": "Sprawling tetrapods and the limbless serpent plan. In a sprawl the upper limb leaves the body sideways ('out' near 70 degrees) and the lower limb drops to the ground.",
+
+  "reptile": {
+    "inherits": "tetrapod", "class": "reptile", "stance": "plantigrade", "posture": "sprawl", "surface": "scales",
+    "trunk": {"chest_depth": 0.20, "chest_width": 0.26, "tuck": 0.0, "shoulder_at": 0.50, "hip_at": 0.50,
+              "joint_x": 0.95, "rump": 0.10, "forechest": 0.08},
+    "fore": [["humerus", 0.17, -15, 70], ["radius", 0.15, 5, 5]],
+    "hind": [["femur", 0.20, 20, 70], ["tibia", 0.19, -10, 5]],
+    "limb": {"thick": 0.80, "foot_len": 0.10, "foot_h": 0.02},
+    "neck": {"length": 0.12, "angle": 8, "thick": 1.2, "set": 0.50},
+    "head": {"skull": 0.22, "muzzle": 0.14, "width": 0.18, "muzzle_width": 0.10, "depth": 0.12, "angle": 0,
+             "eye_up": 0.55, "eye_out": 0.62},
+    "tail": {"length": 1.40, "radius": 0.075, "angle": 12, "curl": 0.1, "style": "taper"},
+    "ears": {"type": "none", "size": 0.0},
+    "features": {"belly": 0.35}
+  },
+  "lizard": {"inherits": "reptile", "color": "#5a8a3a"},
+  "iguana": {"inherits": "reptile", "color": "#6a9a4a",
+             "trunk": {"chest_depth": 0.26, "chest_width": 0.28},
+             "head": {"skull": 0.20, "muzzle": 0.10, "depth": 0.16},
+             "tail": {"length": 1.8}},
+  "crocodile": {
+    "inherits": "reptile", "color": "#4a5a3a",
+    "trunk": {"chest_depth": 0.26, "chest_width": 0.40},
+    "_about": "Approximation. Limb segments set so humerus/ulna and femur/tibia are near 1.4, the usual figure for crocodylians (no specimen source yet). A resting crocodile carries the belly close to the ground, hence the lower leg_to_trunk limit.",
+    "fore": [["humerus", 0.16, -20, 68], ["radius", 0.115, 5, 5]],
+    "hind": [["femur", 0.20, 15, 66], ["tibia", 0.14, -10, 5]],
+    "limb": {"thick": 0.75, "foot_len": 0.12, "foot_h": 0.02},
+    "neck": {"length": 0.15, "angle": 2, "thick": 1.0},
+    "head": {"skull": 0.30, "muzzle": 0.40, "width": 0.28, "muzzle_width": 0.15, "depth": 0.13,
+             "eye_size": 0.016, "eye_up": 0.60, "eye_out": 0.42, "eye_at": 0.85, "muzzle_taper": 0.85},
+    "tail": {"length": 1.30, "radius": 0.11},
+    "limits": {"head_to_trunk": [0.25, 1.10], "leg_to_trunk": [0.03, 0.60]}
+  },
+
+  "amphibian": {
+    "inherits": "reptile", "class": "amphibian", "surface": "skin"
+  },
+  "salamander": {
+    "inherits": "amphibian", "color": "#2a2a2c",
+    "trunk": {"chest_depth": 0.18, "chest_width": 0.20},
+    "fore": [["humerus", 0.11, -10, 75], ["radius", 0.10, 5, 5]],
+    "hind": [["femur", 0.12, 15, 75], ["tibia", 0.11, -8, 5]],
+    "limb": {"thick": 0.75, "foot_len": 0.07, "foot_h": 0.015},
+    "head": {"skull": 0.24, "muzzle": 0.12, "width": 0.20, "muzzle_width": 0.15, "depth": 0.10, "muzzle_taper": 0.9},
+    "tail": {"length": 1.0, "radius": 0.065},
+    "features": {"belly_color": "#e0902a"},
+    "limits": {"leg_to_trunk": [0.03, 0.70]}
+  },
+  "frog": {
+    "inherits": "amphibian", "color": "#5a8a3a",
+    "trunk": {"chest_depth": 0.42, "chest_width": 0.66, "tuck": 0.80, "joint_x": 0.90, "rump": 0.12,
+              "forechest": 0.10, "hip_at": 0.45},
+    "fore": [["humerus", 0.22, -20, 55], ["radius", 0.20, 15, -10]],
+    "hind": [["femur", 0.55, 100, 40], ["tibia", 0.60, -70, 15], ["tarsus", 0.30, 88, 0]],
+    "limb": {"thick": 0.62, "foot_len": 0.35, "foot_h": 0.02},
+    "neck": {"length": 0.03, "angle": 5, "thick": 1.6},
+    "head": {"skull": 0.45, "muzzle": 0.12, "width": 0.62, "muzzle_width": 0.40, "depth": 0.30, "angle": 6,
+             "eye_size": 0.075, "eye_up": 0.58, "eye_out": 0.48, "eye_at": 0.55, "muzzle_taper": 0.75},
+    "tail": {"length": 0.0},
+    "features": {"belly": 0.60},
+    "limits": {"back_slope": [-35, 35], "upper_to_lower_hind": [0.5, 1.6], "leg_to_trunk": [-0.02, 0.9], "fore_to_hind_height": [0.5, 2.8]}
+  },
+
+  "serpent": {
+    "_about": "Approximation, body-length units (1.0 = nose to tail tip). radius 0.018 gives a body about 1/28 of its length wide. waves and amplitude describe the lateral-undulation pose, not the rest shape (the rest pose is straight). head_stations are [fraction of head length from the nose, width, height] in units of body radius x head_width / head_height.",
+    "plan": "serpent", "class": "reptile", "surface": "scales", "color": "#6a7a3a", "size": 1.0,
+    "body": {"radius": 0.018, "head_length": 0.045, "head_width": 1.5, "head_height": 0.85, "waves": 2.5, "amplitude": 0.07,
+             "flat": 0.90, "neck": 0.85, "neck_at": 1.0, "tail_from": 0.70, "tail_tip": 0.10, "eye_size": 0.0035, "eye_station": 1,
+             "head_stations": [[0.10, 0.50, 0.50], [0.40, 0.90, 0.85], [0.72, 1.00, 1.00]],
+             "bones": 24, "rings_per_bone": 2},
+    "features": {"belly": 0.45},
+    "limits": {"radius": [0.006, 0.05], "head_length": [0.02, 0.10], "head_width": [0.9, 2.5], "waves": [0.0, 5.0], "amplitude": [0.0, 0.15]}
+  },
+  "snake": {"inherits": "serpent"},
+  "python": {"inherits": "serpent", "color": "#8a6a3a", "size": 3.0, "body": {"radius": 0.028, "waves": 1.8}},
+  "eel_snake": {"inherits": "serpent", "color": "#2a3a2a", "body": {"radius": 0.014, "waves": 3.2}}
+}
