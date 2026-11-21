@@ -12,7 +12,7 @@ import math
 from mathutils import Matrix, Vector
 
 from .. import creature, parts
-from ..anatomy import biped, profiles, validate
+from ..anatomy import biped, profiles, reference, validate
 from ..face import Head
 from ..meshkit import MeshBuilder, Palette, V, X, Y, Z, add_bevel, sec_dir, sec_x, sec_z
 from ..rigging import Rig
@@ -64,6 +64,9 @@ def build(spec, ctx, type_name):
     H = spec.num("height", 1.8, 0.3, 20)
     lm = apply_friendly(P, spec)
     overrides = profiles.apply_overrides(P, spec)
+    refs = reference.biped_refs(spec, ctx.base_dir)    # front photo: measure, optionally fit, always report
+    if refs and spec.flag("reference_fit", True):
+        reference.fit_biped(P, H, refs, biped.solve, spec)
     sk = biped.solve(P, H)
     L = sk.lm
     outfit = spec.choice("outfit", OUTFITS, "casual")
@@ -391,9 +394,13 @@ def build(spec, ctx, type_name):
         acc_objs.append((obj, bone))
 
     issues = validate.check_biped(sk, overrides) + validate.check_cage(body, extras) + validate.check_rig(rig)
+    if refs:
+        issues += reference.compare_biped(refs, P, sk)
     entity = creature.finalize(ctx, spec, name, body, extras, rig, face, "head", acc_objs, preserve_volume=True,
                               smooth_weights=P["shape"]["weight_smooth"])
     validate.report(name, P, sk, issues, entity, spec, ctx)
+    if refs and spec.flag("reference_show", True):
+        entity.objects += reference.add_empties(refs, entity, ctx)
     # box the `face` camera views frame (head plus a margin), in armature space
     entity.regions = {"face": ((-hw * 1.12, hc - hd * 1.12, zn - hh * 0.10), (hw * 1.12, hc + hd * 1.12, zn + hh * 1.08))}
     return entity

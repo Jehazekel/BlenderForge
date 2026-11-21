@@ -614,5 +614,8 @@ def export(entities, out_base, formats):
 def save(path):
     for o in bpy.context.view_layer.objects:
         o.select_set(False)
-    bpy.ops.wm.save_as_mainfile(filepath=path, check_existing=False, compress=True)
+    # Write beside the target, then swap it in, so a live viewer never loads a half-written file.
+    tmp = path[:-len(".blend")] + ".tmp.blend"
+    bpy.ops.wm.save_as_mainfile(filepath=tmp, check_existing=False, compress=True)
+    os.replace(tmp, path)
     info("saved %s" % path)

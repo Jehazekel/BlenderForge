@@ -1,0 +1,20 @@
+{
+  "enabledMcpjsonServers": ["blender"],
+  "permissions": {
+    "allow": [
+      "mcp__blender__get_addon_status",
+      "mcp__blender__get_scene_info",
+      "mcp__blender__look"
+    ],
+    "ask": [
+      "mcp__blender__execute_blender_code"
+    ],
+    "deny": [
+      "mcp__blender__generate_3d",
+      "mcp__blender__generate_gaussian_world",
+      "mcp__blender__import_asset",
+      "mcp__blender__search_assets",
+      "mcp__blender__record_trajectory_feedback"
+    ]
+  }
+}

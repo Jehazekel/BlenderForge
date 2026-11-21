@@ -8,7 +8,7 @@ and keyframe comes from deterministic Python driving `bpy` and `bmesh`.
 blender --background --python build.py -- input.md output.blend
 ```
 
-The same input always produces the same output. Two runs of `examples/village.md`
+The same input always produces the same output. Two runs of the same file
 give byte-identical `.glb` files.
 
 ## Quick start
@@ -16,13 +16,13 @@ give byte-identical `.glb` files.
 Windows, with the launcher (finds Blender for you):
 
 ```
-forge examples\knight.md out\knight.blend --render --export glb,fbx
+forge examples\base_male.md out\base_male.blend --render --export glb,fbx
 ```
 
 Any platform:
 
 ```
-blender --background --python build.py -- examples/knight.md out/knight.blend --render --export glb
+blender --background --python build.py -- examples/base_male.md out/base_male.blend --render --export glb
 ```
 
 Developed and tested on Blender 5.2 LTS. The code avoids APIs that changed
@@ -92,6 +92,23 @@ type: castle_tower  floors: 4  radius: 3  roof: cone  windows: 8  material: ston
   line up in a row. With a map in the file, they stand on its surface.
 * **An image as the input file** (`build.py -- photo.png out.blend`) becomes a
   terrain: brightness is height, pixels are the ground colours.
+* **Painted layout plans** (`layout: plan.png` on a map): paint flat colours in any
+  paint program and each pixel is matched to the nearest `legend` colour. Defaults:
+  `water=#0000ff forest=#008000 road=#808080 house=#ff0000 rock=#804000
+  sand=#ffff00 field=#ffa000 path=#d2b48c wall=#404040 bridge=#ff00ff`; override any with `legend: forest=#00ff00 ...`.
+  Water is the only water (ground elsewhere stays above the line), forests and rock
+  areas get the trees and rocks (count from the area, `trees_density` /
+  `rocks_density` per 100 m2, or `trees:`/`rocks:`), each house area gets one house,
+  roads, sand and fields tint the ground. Image top is the back (+Y). Works with
+  noise terrain or a `heightmap`.
+* **Reference silhouettes** (one figure on a plain background or with alpha; no
+  image recognition). Animals: `reference_side`, `reference_front`, `reference_top`
+  (+ `reference_facing`). Humans: `reference_front` only, with `reference_pose:
+  any | apose | tpose`. Crown-to-jaw and crotch height are always fitted; hip width
+  needs `apose`/`tpose`, arm span needs `tpose`. Groups you set yourself
+  (`leg_length`, `head_size`, `leg.*`, ...) are kept. `reference_fit: false` only
+  reports; `reference_show: false` hides the image behind the model. Use a distant,
+  straight-on photo; big hair or hats count as head.
 
 ### Errors and fallbacks
 
@@ -243,7 +260,7 @@ type: barrel  position: 4, -2
 ```
 
 ```
-forge examples\edit_tower.md out\tower2.blend --base out\tower.blend --render
+forge my_edit.md out\tower2.blend --base out\tower.blend --render
 ```
 
 `edit` keys: `move`, `position`, `rotate`, `scale`, `hide`, `delete`, `rename`,
@@ -254,14 +271,9 @@ same name as an existing one replaces it.
 
 | File | Shows |
 |---|---|
-| `examples/knight.md` | Armoured humanoid, accessories, three animations, smile |
-| `examples/wolf.md` | Quadruped with run and sit |
-| `examples/tower.md` | Castle tower with cone roof and windows |
-| `examples/village.md` | A full scene on a terrain map, with settings |
-| `examples/menagerie.md` | One of each rig with all its animations |
-| `examples/island.txt` | `.txt` input and an image heightmap |
-| `examples/island_heightmap.png` | Use directly as the input file |
-| `examples/edit_tower.md` | Editing a built file with `--base` |
+| `examples/base_male.md` | Base male character with every animation |
+| `examples/base_female.md` | Base female character with every animation |
+| `examples/village_plan.md` | A village from a painted layout (`village_plan.png`, made by `make_village_plan.py`) |
 
 ## Adding a template
 

@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-21T00:00:00Z",
+  "title": "Design System: BlenderForge Studio",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Warm Charcoal",
+        "canonical": "#2b2622",
+        "oklch": "oklch(27.3% 0.010 61)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#28231f",
+          "#443f3a",
+          "#625c58",
+          "#827c77",
+          "#a39d98",
+          "#c9c3bd",
+          "#f4ede8"
+        ]
+      },
+      "panel-recessed": {
+        "role": "neutral",
+        "displayName": "Recessed Panel",
+        "canonical": "#241f1c",
+        "oklch": "oklch(24.4% 0.010 53)",
+        "tonalRamp": [
+          "#0e0a08",
+          "#282320",
+          "#443e3b",
+          "#625c59",
+          "#827c78",
+          "#a39d99",
+          "#c9c2be",
+          "#f4ede9"
+        ]
+      },
+      "stage": {
+        "role": "neutral",
+        "displayName": "Stage",
+        "canonical": "#221e1b",
+        "oklch": "oklch(23.8% 0.008 59)",
+        "tonalRamp": [
+          "#0e0a08",
+          "#272320",
+          "#433f3b",
+          "#615d59",
+          "#817c78",
+          "#a29d99",
+          "#c8c3bf",
+          "#f3ede9"
+        ]
+      },
+      "canvas-soft": {
+        "role": "neutral",
+        "displayName": "Soft Fill",
+        "canonical": "#383330",
+        "oklch": "oklch(32.5% 0.009 53)",
+        "tonalRamp": [
+          "#0e0a08",
+          "#282320",
+          "#443f3b",
+          "#625c59",
+          "#827c78",
+          "#a39d99",
+          "#c9c3bf",
+          "#f4ede9"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#3f3a36",
+        "oklch": "oklch(35.2% 0.010 61)",
+        "tonalRamp": [
+          "#0e0a07",
+          "#28231f",
+          "#443f3b",
+          "#625c58",
+          "#827c77",
+          "#a39d98",
+          "#c9c3be",
+          "#f4ede8"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "#5a534d",
+        "oklch": "oklch(44.7% 0.013 63)",
+        "tonalRamp": [
+          "#0f0a06",
+          "#29231d",
+          "#453e39",
+          "#635c56",
+          "#837c75",
+          "#a59d96",
+          "#cbc2bb",
+          "#f5ede6"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Bone Cream",
+        "canonical": "#f7f5f0",
+        "oklch": "oklch(97.0% 0.007 89)",
+        "tonalRamp": [
+          "#0c0b08",
+          "#252420",
+          "#41403c",
+          "#5f5d59",
+          "#7f7d79",
+          "#a09e9a",
+          "#c6c4bf",
+          "#f0eee9"
+        ]
+      },
+      "body-strong": {
+        "role": "neutral",
+        "displayName": "Body Strong",
+        "canonical": "#dad2c1",
+        "oklch": "oklch(86.6% 0.025 86)",
+        "tonalRamp": [
+          "#100a02",
+          "#292316",
+          "#463f31",
+          "#645d4e",
+          "#847c6d",
+          "#a59e8d",
+          "#cbc3b3",
+          "#f6eedc"
+        ]
+      },
+      "body": {
+        "role": "neutral",
+        "displayName": "Body",
+        "canonical": "#c9c0ad",
+        "oklch": "oklch(81.0% 0.028 86)",
+        "tonalRamp": [
+          "#100a01",
+          "#2a2314",
+          "#463f2f",
+          "#655d4c",
+          "#857c6b",
+          "#a69e8b",
+          "#ccc3b0",
+          "#f7eeda"
+        ]
+      },
+      "mute": {
+        "role": "neutral",
+        "displayName": "Mute",
+        "canonical": "#aea69c",
+        "oklch": "oklch(72.9% 0.017 74)",
+        "tonalRamp": [
+          "#0f0a04",
+          "#29231b",
+          "#453f36",
+          "#645c53",
+          "#847c72",
+          "#a59d93",
+          "#cbc3b8",
+          "#f6ede2"
+        ]
+      },
+      "status-pass": {
+        "role": "tertiary",
+        "displayName": "Sage Pass",
+        "canonical": "#a8c69f",
+        "oklch": "oklch(79.4% 0.063 139)",
+        "tonalRamp": [
+          "#001000",
+          "#132b0a",
+          "#2e4826",
+          "#4c6643",
+          "#6b8762",
+          "#8ba882",
+          "#b0cea7",
+          "#daf9d1"
+        ]
+      },
+      "status-warn": {
+        "role": "tertiary",
+        "displayName": "Amber Warn",
+        "canonical": "#e0b36a",
+        "oklch": "oklch(79.2% 0.105 78)",
+        "tonalRamp": [
+          "#200000",
+          "#3e1900",
+          "#5d3600",
+          "#7d5500",
+          "#9f7529",
+          "#c2964d",
+          "#e9bc73",
+          "#ffe69c"
+        ]
+      },
+      "status-fail": {
+        "role": "tertiary",
+        "displayName": "Clay Fail",
+        "canonical": "#e88a72",
+        "oklch": "oklch(72.8% 0.121 35)",
+        "tonalRamp": [
+          "#2d0000",
+          "#4f0000",
+          "#711f08",
+          "#95402b",
+          "#b9604a",
+          "#de826a",
+          "#ffa78e",
+          "#ffd1b7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles on full-page views."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Settings section heads."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Controls, buttons, inputs, list rows."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, segments, clips, hints, group heads; sentence case."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Spec Markdown and command previews."
+      },
+      "mono-small": {
+        "displayName": "Mono Small",
+        "purpose": "File paths and frame counters."
+      }
+    },
+    "shadows": [],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid #f7f5f0; outline-offset: 2px",
+        "purpose": "Keyboard focus and selected template tile."
+      }
+    ],
+    "overlays": [
+      {
+        "name": "stage-hint",
+        "value": "rgba(34,30,27,.8)",
+        "purpose": "Translucent backing for the stage hint label."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-hover",
+        "value": "150ms ease-out",
+        "purpose": "Tile outline and hover colour changes."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "min-desktop",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single cream action per view (Build, New project, Create).",
+      "html": "<button class=\"ds-btn-primary\">Build</button>",
+      "css": ".ds-btn-primary{font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;font-weight:500;background:#f7f5f0;color:#2b2622;border:1px solid transparent;border-radius:3px;padding:8px 14px;min-height:36px;cursor:pointer;transition:background .15s ease-out}.ds-btn-primary:hover{background:#dad2c1}.ds-btn-primary:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary top-bar and page actions (Check, Export, Open .blend).",
+      "html": "<button class=\"ds-btn-ghost\">Check</button>",
+      "css": ".ds-btn-ghost{font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;font-weight:500;background:transparent;color:#dad2c1;border:1px solid transparent;border-radius:3px;padding:8px 14px;min-height:36px;cursor:pointer;transition:background .15s ease-out,color .15s ease-out}.ds-btn-ghost:hover{background:#383330;color:#f7f5f0}.ds-btn-ghost:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Bordered ghost for actions inside settings rows (Choose, Run sweep, Copy).",
+      "html": "<button class=\"ds-btn-line\">Run sweep</button>",
+      "css": ".ds-btn-line{font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;font-weight:500;background:transparent;color:#dad2c1;border:1px solid #3f3a36;border-radius:3px;padding:8px 14px;min-height:36px;cursor:pointer}.ds-btn-line:hover{background:#383330;color:#f7f5f0}.ds-btn-line:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "segmented-track",
+      "description": "Every exclusive choice: mode, spec view, view angle, build.",
+      "html": "<div class=\"ds-segs\" role=\"group\" aria-label=\"Blender mode\"><button class=\"ds-seg ds-on\">Headless</button><button class=\"ds-seg\">Live Blender</button></div>",
+      "css": ".ds-segs{display:inline-flex;gap:2px;background:#383330;padding:2px;border-radius:4px}.ds-seg{font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:18px;font-weight:500;background:transparent;border:0;color:#aea69c;padding:6px 12px;border-radius:3px;min-height:32px;cursor:pointer}.ds-seg:hover{color:#f7f5f0}.ds-seg.ds-on{background:#2b2622;color:#f7f5f0}.ds-seg:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form fields; numeric and hex values switch to DM Mono.",
+      "html": "<input class=\"ds-input\" type=\"text\" value=\"Knight\" aria-label=\"Name\"><input class=\"ds-input ds-mono\" type=\"text\" value=\"1.8\" aria-label=\"Height\">",
+      "css": ".ds-input{font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;background:#383330;color:#f7f5f0;border:1px solid #3f3a36;border-radius:3px;padding:9px 10px;margin:0 8px 8px 0}.ds-input.ds-mono{font-family:'DM Mono',ui-monospace,Menlo,monospace;width:96px}.ds-input:hover{border-color:#5a534d}.ds-input:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Removable part list items (accessories, animations) with a dashed Add sibling.",
+      "html": "<span class=\"ds-chip\">Helmet<button aria-label=\"Remove helmet\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button></span><button class=\"ds-add\">Add</button>",
+      "css": ".ds-chip{font-family:Inter,system-ui,sans-serif;display:inline-flex;align-items:center;gap:6px;background:#383330;color:#f7f5f0;border-radius:3px;padding:6px 8px 6px 10px;font-size:13px;margin-right:6px}.ds-chip button{background:transparent;border:0;color:#aea69c;cursor:pointer;padding:0;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center}.ds-chip button:hover{color:#f7f5f0}.ds-add{font-family:Inter,system-ui,sans-serif;background:transparent;border:1px dashed #5a534d;color:#aea69c;border-radius:3px;padding:6px 10px;font-size:13px;line-height:18px;cursor:pointer}.ds-add:hover{color:#f7f5f0;border-color:#aea69c}"
+    },
+    {
+      "name": "Animation Clip",
+      "kind": "custom",
+      "refersTo": "clip",
+      "description": "Clip toggles in the stage clip bar; the playing clip turns cream.",
+      "html": "<button class=\"ds-clip\">Walk</button><button class=\"ds-clip ds-on\">Idle</button>",
+      "css": ".ds-clip{font-family:Inter,system-ui,sans-serif;font-size:13px;line-height:18px;font-weight:500;background:transparent;border:1px solid #3f3a36;color:#c9c0ad;border-radius:3px;padding:6px 12px;min-height:32px;margin-right:6px;cursor:pointer}.ds-clip:hover{color:#f7f5f0}.ds-clip.ds-on{background:#f7f5f0;border-color:#f7f5f0;color:#2b2622}.ds-clip:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Settings Nav",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Advanced settings section nav.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-item ds-on\">Blender</a><a href=\"#\" class=\"ds-nav-item\">Preview render</a><a href=\"#\" class=\"ds-nav-item\">Export</a></nav>",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:2px;width:200px}.ds-nav-item{font-family:Inter,system-ui,sans-serif;display:block;padding:8px 12px;border-radius:3px;color:#c9c0ad;text-decoration:none;font-size:14px}.ds-nav-item:hover,.ds-nav-item.ds-on{background:#383330;color:#f7f5f0}.ds-nav-item:focus-visible{outline:2px solid #f7f5f0;outline-offset:2px}"
+    },
+    {
+      "name": "Status Line",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Single workspace footer line: status dot, plain-language count, measures, Details link.",
+      "html": "<div class=\"ds-status\"><span class=\"ds-dot\"></span><span>1 problem, 1 warning</span><span class=\"ds-m\">1.80 m tall</span><a href=\"#\">Details</a></div>",
+      "css": ".ds-status{font-family:Inter,system-ui,sans-serif;display:flex;align-items:center;gap:12px;padding:10px 20px;border-top:1px solid #3f3a36;background:#2b2622;font-size:13px;color:#c9c0ad}.ds-dot{width:8px;height:8px;border-radius:9999px;background:#e88a72}.ds-m{color:#aea69c}.ds-status a{color:#dad2c1;margin-left:auto;text-underline-offset:3px}.ds-status a:hover{color:#f7f5f0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Workbench",
+    "overview": "A warm charcoal room where the model and the spec are the only things that speak. The chrome is low-contrast, flat and thin: one hairline between panes, one cream button per view, colour reserved for build status. Density is moderate rather than IDE-tight; controls are 32-36px tall with roomy 44px form rows, so a beginner can read the form while a maintainer still finds every check.\n\nThe world is Warp-inspired: warm near-black surfaces stepped by a few lightness points instead of shadows, Inter for every interface word, DM Mono only for text the machine reads or writes (spec Markdown, file paths, numbers, frame counters). Real BlenderForge renders are the imagery; nothing decorative competes with them.\n\nThe system refuses the dense five-panel IDE. Two working panes at most, the model stage always the larger one.",
+    "keyCharacteristics": [
+      "Warm charcoal tonal layering, no shadows, 1px hairlines separate panes.",
+      "Cream (`ink`) is both the brightest text and the single primary action.",
+      "Status colours (pass, warn, fail) appear only as status, plus warn as the spec-key syntax colour.",
+      "Small radii (3px controls, 4px panels and tracks); no pills except 8px status dots.",
+      "Segmented controls for every exclusive choice; chips for lists of parts."
+    ],
+    "rules": [
+      {
+        "name": "The Status-Only Colour Rule",
+        "body": "Hue appears only to report a check result (and amber for spec keys). Any other coloured fill is a defect; user data swatches (skin colour) are content, not chrome.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Cream Rule",
+        "body": "A view has one cream button: the primary action (Build, New project, Create). Selected clips may be cream because they are state, not action.",
+        "section": "colors"
+      },
+      {
+        "name": "The Machine Text Rule",
+        "body": "DM Mono is for spec text, paths, hex values, numbers the build reports, and frame counts. Never for headings, buttons or prose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Labels and group heads are sentence case in `mute`; hierarchy comes from size, weight and colour, not uppercase tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Model Gets the Room Rule",
+        "body": "The model stage is always the largest region; side panes cap at 440px (520px for the template aside).",
+        "section": "layout"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "No box-shadows anywhere. If two regions need separation, use a 1px hairline or a lightness step.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep the model stage the largest region and side panes at or under 440px.",
+      "**Do** use one cream primary button per view and ghost or line buttons for everything else.",
+      "**Do** separate panes with a 1px `hairline` (#3f3a36) and step surfaces by lightness for depth.",
+      "**Do** use segmented controls for exclusive choices and chips for part lists.",
+      "**Do** set spec text, paths, hex values and build numbers in DM Mono; everything else in Inter.",
+      "**Do** show real BlenderForge renders for templates, thumbnails and the stage."
+    ],
+    "donts": [
+      "**Don't** add box-shadows or glows; this world is flat.",
+      "**Don't** use status colours (#a8c69f, #e0b36a, #e88a72) for decoration, branding or non-status emphasis.",
+      "**Don't** round controls past 4px or make pill buttons; circles are for 8px status dots only.",
+      "**Don't** introduce a third working pane or a dense multi-panel IDE layout.",
+      "**Don't** use uppercase tracked labels or eyebrows above headings; labels are sentence case."
+    ]
+  }
+}

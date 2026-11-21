@@ -18,7 +18,7 @@ EARS = ("pointed", "round", "floppy", "none")
 BUILDS = {"slim": 0.85, "average": 1.0, "muscular": 1.15, "heavy": 1.35}
 N = 12                      # ring size: bottom is index 9
 LOW = (7, 8, 9, 10, 11)     # ring vertices below the midline
-SLOTS = ("fur", "belly", "hair", "dark", "white", "mouth", "hoof", "horn")
+SLOTS = ("fur", "belly", "hair", "dark", "white", "mouth", "hoof", "horn", "stripe", "mark", "inner", "nose")
 
 
 def _transport(points, radii, last_down=0):
@@ -34,14 +34,12 @@ def _transport(points, radii, last_down=0):
         else:
             t = (points[min(i + 1, n - 1)] - points[max(i - 1, 0)])
             t = t.normalized() if t.length > 1e-9 else V(0, 0, -1)
-        if u is None:
-            u = Y.cross(t)
-            if u.length < 0.2:
-                u = X.cross(t)
+        if u is None or (u - t * u.dot(t)).length < 1e-4:
+            u = Y.cross(t)                  # first radius sideways, second fore-aft
+            if u.length < 0.2:              # path runs fore-aft (leg leaves the body level): keep it sideways
+                u = -X - t * (-X).dot(t)
         else:
             u = u - t * u.dot(t)
-            if u.length < 1e-4:
-                u = Y.cross(t) if abs(t.y) < 0.9 else X.cross(t)
         u.normalize()
         v = t.cross(u)
         r1, r2 = radii[i]
@@ -178,7 +176,7 @@ def make(sk, slot):
                 pts = [c0 + (J[1] - J[0]).normalized() * lr * 0.4] + J[1:]
                 rad = [(1.15, 1.15)] + [(0.85 - 0.25 * q / max(len(J) - 2, 1),) * 2 for q in range(len(J) - 1)]
             else:
-                p0 = V(J[0].x * 0.35 + c0.x * 0.65, c0.y, c0.z - lr * 0.3)
+                p0 = V(J[0].x * 0.35 + c0.x * 0.65, c0.y, max(c0.z - lr * 0.3, (J[0].z + J[1].z) / 2))   # thigh runs down to the knee
                 pts = [p0, p0 + (J[1] - p0) * 0.45] + J[1:]
                 up = (1.45 * mass, 2.3 * mass) if pair == "h" else (1.30 * mass, 1.9 * mass)
                 kn = (0.95, 1.20) if pair == "h" else (0.85, 0.98)
@@ -219,12 +217,14 @@ def make(sk, slot):
             s = "L" if sg > 0 else "R"
             base = neck1 + f * hs * 0.22 + u * half_d * 0.80 + X * sg * half_w * 0.58
             out = V(sg, 0, 0) if etype != "floppy" else V(sg, 0, 0) * 0.9 - u * 0.1
-            creature.add_ear(extras, etype, base, out, u + V(sg * 0.28, 0, 0) - f * 0.1,
-                             P["ears"]["size"] * k * 1.6, mf, mf, "ear." + s)
+            creature.add_ear(extras, etype, base, out,
+                             u + V(sg * P["ears"].get("splay", 0.28), 0, 0) - f * P["ears"].get("lean", 0.1),
+                             P["ears"]["size"] * k * 1.6, mf, slot["inner"], "ear." + s,
+                             width=P["ears"].get("width", 1.0), facing=P["ears"].get("facing", 0.0), fwd=f)
     if mammal:
         with extras.part(bone="head"):
             extras.sphere(nose_tip + u * hs * 0.10 * dk - f * hs * 0.02,
-                          (hs * 0.15 * sw, hs * 0.11, hs * 0.11 * dk), md, n=6, m=3)
+                          (hs * 0.15 * sw, hs * 0.11, hs * 0.11 * dk), slot["nose"], n=6, m=3)
     (mid_c, mid_w, mid_h, _), (tip_c, tip_w, tip_h, _) = head[-2], head[-1]
     low = 0.52
     pts = [(mid_c + X * mid_w * 0.99 - u * mid_h * low, -1.0),
@@ -306,6 +306,8 @@ def make(sk, slot):
     rig.meta = {"size": S, "leg_f": max(lm["shoulder.L"].z - foot_h, 0.02 * S),
                 "leg_h": max(lm["hip.L"].z - foot_h, 0.02 * S),
                 "torso": (chest_p - hip).length, "tail": tail_names,
+                "sprawl": sprawl,                    # body hangs between the legs: never lowered to reach
+                "gait": dict(P.get("gait", {})),     # per-profile walk overrides (stride, lift, period)
                 # how far the neck may pitch down in a run before a low head meets the ground
                 "neck_dip": min(1.0, lm["nose"].z * 0.8 / max(0.35 * (lm["nose"] - chest_p).length, 1e-6)),
                 "tail_floor": min([r for _, r in sk.tail] or [0.0]),
@@ -327,6 +329,59 @@ def silhouette_geometry(profile, size):
     sk = skeleton.solve(profile, size)
     body, extras, _, _ = make(sk, _Index())
     return sk, body, extras
+
+
+def paint_markings(sk, mk, meshes, slot):
+    """Recolour fur faces by position: tabby stripes, white socks, white muzzle.
+
+    `meshes` is (body, extras); stripes go on the body only. `mk` is the profile's `markings` block; sizes are fractions (stripe period of
+    trunk length, withers to rump, so head size does not widen body bands; forehead
+    period `stripes.head` of head width; socks of withers height, muzzle of head width). Uses only
+    face centres and abs(x), so left and right stay mirrored."""
+    fur, stripe, white = slot["fur"], slot["stripe"], slot["mark"]
+    lm, hd = sk.lm, sk.head
+    nose, poll, withers, rump = lm["nose"], lm["poll"], lm["withers"], lm["rump"]
+    size = abs(withers.y - rump.y)
+    head_c = poll + hd["f"] * hd["skull"] * 0.5
+    head_r = max(hd["skull"], hd["depth"], hd["width"]) * 0.55
+    sock_h = mk.get("socks", 0.0) * withers.z
+    muz_c = nose - hd["u"] * hd["depth"] * 0.18
+    muz_r = mk.get("muzzle", 0.0) * hd["width"]
+    st = mk.get("stripes")
+    period = st["period"] * size if st else 0.0
+    duty = st.get("width", 0.4) if st else 0.0
+    head_period = st.get("head", 0.0) * hd["width"] if st else 0.0
+    head_period = head_period or period
+    leg_top = lm["sternum"].z * 0.9
+
+    def band(t, ph=0.0, per=None):
+        per = per or period
+        return per > 0 and ((t / per + ph) % 1.0) < duty
+
+    for mi, bm in enumerate(meshes):
+        stripes_here = period and mi == 0                 # body only; ears and other extras stay plain
+        for face in bm.faces:
+            if face.material_index != fur:
+                continue
+            c = face.calc_center_median()
+            if sock_h and c.z < sock_h:
+                face.material_index = white
+            elif muz_r and (c - muz_c).length < muz_r and c.z < nose.z + muz_r * 0.3:
+                face.material_index = white
+            elif not stripes_here:
+                continue
+            elif (c - head_c).length < head_r:            # forehead: narrow lines either side of the midline
+                top = c.z > head_c.z + hd["depth"] * 0.1 and abs(c.x) < hd["width"] * 0.3   # crown, not cheeks
+                if top and band(abs(c.x), 0.5, head_period):
+                    face.material_index = stripe
+            elif c.y > rump.y:                             # tail: rings
+                if band(c.z):
+                    face.material_index = stripe
+            elif c.z < leg_top:                            # legs: horizontal bands
+                if band(c.z, 0.25):
+                    face.material_index = stripe
+            elif band(c.y):                                # back and flanks
+                face.material_index = stripe
 
 
 def build(spec, ctx, type_name):
@@ -372,9 +427,23 @@ def build(spec, ctx, type_name):
         "hoof": ctx.mat("Hoof", "plain", (0.03, 0.025, 0.02, 1), roughness=0.4) if feats["hooves"] else fur,
         "horn": ctx.mat("Horn", "plain", spec.color("horn_color", "#d8cdb4"), roughness=0.45) if feats["horns"] else fur,
     }
+    mk = P.get("markings") or {}
+    if spec.has("markings") and not spec.flag("markings", True):
+        mk = {}
+    st = mk.get("stripes")
+    stripe_c = spec.color("stripe_color", tuple(c * st.get("dark", 0.6) for c in fur_c[:3]) + (1,)) if st else None
+    mark_c = spec.color("mark_color", belly_c or (0.95, 0.92, 0.86, 1)) if mk else None
+    mats["stripe"] = ctx.mat("Stripe", surf, stripe_c, scale=2.2, deform=True) if st else fur
+    mats["mark"] = ctx.mat("Mark", surf, mark_c, scale=2.2, deform=True) if mk else fur
+    inner_c = P["ears"].get("inner")
+    mats["inner"] = ctx.mat("EarInner", surf, spec.color("ear_color", inner_c), scale=2.2, deform=True) if inner_c else fur
+    nose_c = spec.color("nose_color", P.get("nose")) if (P.get("nose") or spec.has("nose_color")) else None
+    mats["nose"] = ctx.mat("Nose", "plain", nose_c, roughness=0.35) if nose_c else mats["dark"]
     slot = {s: pal.index(mats[s]) for s in SLOTS}
     slot["_palette"] = pal
     body, extras, rig, face = make(sk, slot)
+    if mk:
+        paint_markings(sk, mk, (body.bm, extras.bm), slot)
     rig.name = name
 
     issues = validate.check_skeleton(sk, overrides)
@@ -382,7 +451,8 @@ def build(spec, ctx, type_name):
     issues += validate.check_rig(rig)
     if refs:
         issues += reference.compare(refs, body, extras, fit_notes)
-    entity = creature.finalize(ctx, spec, name, body, extras, rig, face, "head")
+    entity = creature.finalize(ctx, spec, name, body, extras, rig, face, "head",
+                               fade_roots=P.get("skin", {}).get("fade_roots", True))
     if leg_fit:
         issues.append(("info", "stature", "legs scaled x%.2f to shoulder height %.2f of head-body length (%s)"
                        % (leg_fit, P["stature"]["ratio"], P["stature"]["source"])))

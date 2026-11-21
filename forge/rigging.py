@@ -140,6 +140,99 @@ def skin_auto(mesh_obj, arm_obj, preserve_volume=False):
         info("filled %d unweighted vertices on '%s'" % (fixed, mesh_obj.name))
 
 
+ROOT_FADE = {"h_femur": "up", "f_humerus": "up", "tail1": "back"}
+MID_FADE = 2.0   # limb weight reaches 0 this many joint-widths inside the joint (1.0 = at the midline)
+
+
+def fade_roots(mesh_obj, arm_obj, band_frac=0.6):
+    """Keep upper-limb and tail-base weights off the trunk around them.
+
+    Bone heat on short, thick trunks (toy animals) lets `h_femur`/`f_humerus`
+    reach the back above the joint and `tail1` reach the rump in front of its base,
+    so a leg swing or tail flick tears the rump; they also reach the groin and
+    chest web between the legs. A vertex above the limb joint
+    (or in front of the tail base, along the bone) keeps that weight scaled by
+    max(0, 1 - d / band), band = band_frac * bone length, and a limb weight inside
+    the joint fades linearly to 0 at MID_FADE joint-widths in; what is lost goes to the
+    bone's parent. Uses only z and the bone axis, so left and right stay mirrored."""
+    groups = mesh_obj.vertex_groups
+    rules = []
+    for b in arm_obj.data.bones:
+        kind = ROOT_FADE.get(b.name.split(".")[0])
+        if kind and b.name in groups and b.parent and b.parent.name in groups:
+            band = max(band_frac * b.length, 1e-4)
+            axis = (b.tail_local - b.head_local).normalized()
+            rules.append((groups[b.name].index, groups[b.parent.name].index, kind, b.head_local.copy(), axis, band))
+    if not rules:
+        return
+    for v in mesh_obj.data.vertices:
+        w = {g.group: g.weight for g in v.groups}
+        changed = False
+        for gi, pi, kind, head, axis, band in rules:
+            if gi not in w:
+                continue
+            d = v.co.z - head.z if kind == "up" else -(v.co - head).dot(axis)
+            f = max(0.0, 1.0 - d / band) if d > 0 else 1.0
+            if kind == "up" and abs(head.x) > 1e-4:          # groin / chest web between the legs
+                inward = abs(head.x) - v.co.x * (1.0 if head.x > 0 else -1.0)
+                if inward > 0:
+                    f *= max(0.0, 1.0 - inward / (MID_FADE * abs(head.x)))
+            if f >= 1.0:
+                continue
+            keep = w[gi] * f
+            w[pi] = w.get(pi, 0.0) + w[gi] - keep
+            w[gi] = keep
+            changed = True
+        if not changed:
+            continue
+        total = sum(w.values())
+        for gi, x in w.items():
+            if x <= 1e-6:
+                groups[gi].remove([v.index])
+            else:
+                groups[gi].add([v.index], x / total, "REPLACE")
+
+
+def split_sides(mesh_obj, band_frac=0.1):
+    """Keep left bones off the right side and right bones off the left.
+
+    Bone heat and smoothing let weights cross the midline when two limbs sit
+    close together (short, thick legs), so moving one leg drags the other.
+    A vertex at x on the far side keeps a `.L`/`.R` weight scaled by
+    max(0, 1 - |x| / band), band = band_frac * mesh half-width, so the midline
+    itself stays smooth. Left is +X. Mirrored input gives mirrored output."""
+    verts = mesh_obj.data.vertices
+    half = max((abs(v.co.x) for v in verts), default=0.0)
+    if half < 1e-6:
+        return
+    band = band_frac * half
+    side = {}
+    for vg in mesh_obj.vertex_groups:
+        if vg.name.endswith(".L"):
+            side[vg.index] = 1.0
+        elif vg.name.endswith(".R"):
+            side[vg.index] = -1.0
+    if not side:
+        return
+    groups = mesh_obj.vertex_groups
+    for v in verts:
+        own = [(g.group, g.weight) for g in v.groups]
+        new = []
+        for gi, w in own:
+            sg = side.get(gi)
+            if sg is not None and v.co.x * sg < 0:
+                w *= max(0.0, 1.0 - abs(v.co.x) / band)
+            new.append((gi, w))
+        total = sum(w for _, w in new)
+        if total < 1e-6 or all(abs(a[1] - b[1]) < 1e-9 for a, b in zip(own, new)):
+            continue
+        for gi, w in new:
+            if w <= 1e-6:
+                groups[gi].remove([v.index])
+            else:
+                groups[gi].add([v.index], w / total, "REPLACE")
+
+
 def smooth_weights(mesh_obj, passes, factor=0.5):
     """Blend each vertex's weights with its neighbours'. Bone heat on a coarse
     cage changes bone too abruptly across a joint; this widens the transition."""

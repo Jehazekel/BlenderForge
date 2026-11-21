@@ -9,6 +9,7 @@ Blender: `C:\Program Files\Blender Foundation\Blender 5.2\blender.exe` (call it 
 - Templates: `$BL --background --python build.py -- --list`
 - Animations: build a `.blend`, then `$BL --background x.blend --python tools/check_anims.py 2>&1 | grep ANIM` (one line per action: IK reach, lowest bone, sharpest bend).
 - Characters: `tools/check_character.py` (same way, `grep CHAR`): rig, shape keys, stretch/squash/volume per action; add `-- --detail` for the worst edge (frame, position, weights). Views: `--view sheet` (six angles, one image) or `face`, `side`, ...; `--focus NAME`.
+- All numeric gates at once: `$BL --background --python tools/gates.py -- in.md [--sweep]` (one `GATE` line each, last line `GATES: n fail`; `--sweep` compares 18 scenes with `out/sweep_baseline.json`, ~50 s).
 - Character work follows the nine stages and gates in `forge/WORKFLOW.md`; test file `out/t_char.md`.
 
 ## Keeping sessions cheap
@@ -18,6 +19,17 @@ Blender: `C:\Program Files\Blender Foundation\Blender 5.2\blender.exe` (call it 
 - Look at a render only when shape matters, at 640x360, one image per change.
 - Do not read `out/`, `*.anatomy.json` or `forge/anatomy/data/measured.json` whole; grep for the entity or key.
 - Read `PROGRESS.md` for status instead of re-exploring; update it when a piece of work lands.
+
+## Live mode (Blender MCP, optional)
+Headless `build.py` stays the only builder and the only result that counts. Live mode adds a GUI window to watch and `look` at.
+- Viewer: `$BL out/x.blend --python tools/live_view.py` reloads after each build, keeps your view, writes `out/x.blend.live` (loaded mtime_ns). Minimized works.
+- Before `look`, confirm `x.blend.live` matches the file's mtime_ns, so you see the latest build.
+- `look` only after the number checks pass. Use `mode: "angles"`, 2-3 views picked from `forge/WORKFLOW.md` "Views by problem", `max_size` <= 512. Always pass `target`: the mesh `<Name>` for the whole body (untargeted framing includes the 144 m `PreviewGround`), or a focus point `F_<Name>_<bone>` plus `distance` to zoom (`F_Adult_head` 0.55, `F_Adult_hand.L` 0.4). The viewer hides rigs and adds these points; they are never saved. Eyes read badly in `solid`; use `material` for faces. The server restarts on each reload, so one failed call right after a build is normal; retry once.
+- Allowed: `look`, `get_scene_info`, `get_addon_status`. `execute_blender_code` asks first. Generators and asset imports are denied (`.claude/settings.json`).
+- Fixes go into `forge/` (profiles before code) and must pass headless `--check` plus the regression sweep. Never change measured or cited values to fix a look; add an override marked approximation.
+- At most 3 look-fix rounds per gate, then log it in `PROGRESS.md` as needing review. Commit once per round.
+- Unattended fixing: the `fix-loop` skill (`/fix-loop out/t_char.md`) runs gates, looks, fixes, with caps and a log in `out/fixloop/`.
+- No live Blender (`get_addon_status` fails)? Use headless `--render --view ...` instead.
 
 ## Architecture
 Creatures follow four layers; keep them apart:

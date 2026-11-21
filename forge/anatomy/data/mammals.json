@@ -47,11 +47,12 @@
   "fox": {
     "inherits": "canid", "color": "#c4622d",
     "trunk": {"chest_depth": 0.36, "chest_width": 0.22},
-    "limb": {"fore_scale": 0.85, "hind_scale": 0.85, "thick": 0.85},
+    "limb": {"fore_scale": 0.95, "hind_scale": 0.95, "thick": 0.85},
     "head": {"muzzle": 0.22, "muzzle_width": 0.075, "width": 0.19},
     "tail": {"style": "bushy", "radius": 0.10, "length": 0.80},
     "ears": {"size": 0.14},
-    "features": {"belly": 0.75}
+    "features": {"belly": 0.75},
+    "skin": {"fade_roots": false, "_about": "fading limb weights off the trunk raised run stretch (1.58 -> 1.96)"}
   },
 
   "felid": {
@@ -64,6 +65,40 @@
     "tail": {"length": 0.85, "radius": 0.026, "angle": 50, "curl": 0.8}
   },
   "cat": {"inherits": "felid", "color": "#8a8580", "limb": {"thick": 0.90}, "features": {"belly": 0.25}},
+  "toy_cat": {
+    "inherits": "cat",
+    "_about": "approximation: stylized chibi cat (big head, short muzzle and legs, raised tail), eyeballed from Clover Lane Pet Market pets/cat.png; body proportions, tail and gait matched by measurement to pets/models/Cat_animated.glb; not anatomical",
+    "trunk": {"chest_depth": 0.72, "chest_width": 0.70, "tuck": 0.04, "hip_width": 1.25, "shoulder_at": 0.80, "forechest": 0.03},
+    "limb": {"thick": 1.10, "fore_scale": 0.95, "hind_scale": 0.95, "upper_mass": 0.65},
+    "neck": {"length": 0.30, "angle": 150},
+    "head": {"skull": 0.68, "muzzle": 0.01, "width": 1.04, "muzzle_width": 0.52, "depth": 0.84, "angle": 6,
+             "muzzle_taper": 0.90, "eye_size": 0.075, "eye_up": 0.25, "eye_out": 0.36, "eye_at": 0.88},
+    "ears": {"type": "pointed", "size": 0.30, "width": 1.5, "facing": 0.8, "inner": "#e9a3a8"},
+    "tail": {"length": 1.25, "radius": 0.08, "angle": -89, "curl": 1.3},
+    "features": {"belly": 0.45},
+    "gait": {"stride": 0.32, "lift": 0.16, "crouch": 0.08, "period": 1.0},
+    "nose": "#e8838f",
+    "limits": {"chest_depth": [0.26, 0.80]},
+    "markings": {"stripes": {"period": 0.20, "width": 0.45, "dark": 0.45, "head": 0.16}, "socks": 0.22, "muzzle": 0.22}
+  },
+  "toy_rabbit": {
+    "inherits": "toy_cat",
+    "_about": "approximation: stylized Clover Lane rabbit (compact haunch, long separate paddle ears, small round tail, long flat hind feet), eyeballed from Clover Lane Pet Market pets/specifications/Rabbit.md (Farm Companions row 1 col 1); ear angles from that brief (splay 20, lean 12 back); not anatomical",
+    "color": "#F4C28E", "stance": "plantigrade",
+    "trunk": {"chest_depth": 0.66, "chest_width": 0.62, "tuck": 0.0, "hip_width": 1.40, "shoulder_at": 0.78, "forechest": 0.02, "hip_at": 0.52},
+    "fore": [["humerus", 0.24, -20, 0], ["radius", 0.22, 4, 0]],
+    "hind": [["femur", 0.30, 25, 0], ["tibia", 0.28, -30, 0]],
+    "limb": {"thick": 0.95, "fore_scale": 0.80, "hind_scale": 0.80, "upper_mass": 0.70, "foot_len": 0.16, "foot_h": 0.05},
+    "neck": {"length": 0.22, "angle": 60},
+    "head": {"skull": 0.56, "muzzle": 0.08, "width": 0.78, "muzzle_width": 0.46, "depth": 0.66, "angle": -6,
+             "muzzle_taper": 0.80, "eye_size": 0.075, "eye_up": 0.35, "eye_out": 0.48, "eye_at": 0.72},
+    "ears": {"type": "pointed", "size": 0.50, "width": 0.75, "facing": 0.55, "inner": "#E59580", "splay": 0.36, "lean": 0.21},
+    "tail": {"length": 0.14, "radius": 0.10, "angle": 35, "curl": 0.0, "style": "plain"},
+    "features": {"belly": 0.45},
+    "gait": {"stride": 0.30, "lift": 0.20, "crouch": 0.06, "period": 0.6},
+    "nose": "#CF7656",
+    "markings": {"stripes": null, "socks": 0.16, "muzzle": 0.30}
+  },
   "lion": {
     "inherits": "felid", "color": "#c79a4f",
     "trunk": {"chest_depth": 0.46, "chest_width": 0.31, "tuck": 0.20},
@@ -98,7 +133,8 @@
     "head": {"skull": 0.30, "muzzle": 0.30, "width": 0.18, "muzzle_width": 0.13, "depth": 0.23, "angle": -38, "muzzle_taper": 0.88},
     "tail": {"length": 0.75, "radius": 0.05, "angle": 80, "curl": 0.1, "style": "hair"},
     "ears": {"type": "pointed", "size": 0.09},
-    "features": {"belly": null, "mane": "horse", "hooves": true}
+    "features": {"belly": null, "mane": "horse", "hooves": true},
+    "skin": {"fade_roots": false, "_about": "fading limb weights off the trunk lowered run/jump squash (0.37 -> 0.17) on long legs"}
   },
   "horse": {"inherits": "equid", "color": "#6b4226"},
 

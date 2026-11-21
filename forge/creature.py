@@ -84,8 +84,11 @@ def add_brow(mb, face, c, size, mat, side, bone="head"):
     face["brow_h"] = size[2]
 
 
-def add_ear(mb, kind, base, out, up, size, mat, inner_mat, bone):
-    """Ear shell at an attachment point. kind: pointed, round, floppy."""
+def add_ear(mb, kind, base, out, up, size, mat, inner_mat, bone, width=1.0, facing=0.0, fwd=None):
+    """Ear shell at an attachment point. kind: pointed, round, floppy.
+
+    Pointed ears only: width scales the base, facing (0..1) turns the flat side from
+    sideways towards fwd, and an inner_mat other than mat adds an inset inner face."""
     base, out, up = Vector(base), Vector(out).normalized(), Vector(up).normalized()
     side = up.cross(out).normalized()
     with mb.part(bone=bone):
@@ -105,10 +108,18 @@ def add_ear(mb, kind, base, out, up, size, mat, inner_mat, bone):
             mb.loft(secs, n=6, mat=mat)
         else:       # pointed
             tip = base + up * size + out * size * 0.15
-            secs = [(base - up * size * 0.1, side * size * 0.36, out * size * 0.20),
-                    (base + up * size * 0.45 + out * size * 0.05, side * size * 0.25, out * size * 0.12)]
+            thick = out if fwd is None or facing <= 0 else (out * (1 - facing) + Vector(fwd).normalized() * facing).normalized()
+            wide = side if thick is out else up.cross(thick).normalized()
+            secs = [(base - up * size * 0.1, wide * size * 0.36 * width, thick * size * 0.20),
+                    (base + up * size * 0.45 + out * size * 0.05, wide * size * 0.25 * width, thick * size * 0.12)]
             rings = mb.loft(secs, n=6, mat=mat, cap_end=False)
             mb.cap(rings[-1], mat, c=tip)
+            if inner_mat != mat and thick is not out:
+                o = thick * size * 0.13            # sits just proud of the front face
+                secs = [(base + up * size * 0.05 + o, wide * size * 0.24 * width, thick * size * 0.06),
+                        (base + up * size * 0.45 + out * size * 0.04 + o, wide * size * 0.15 * width, thick * size * 0.05)]
+                rings = mb.loft(secs, n=6, mat=inner_mat, cap_end=False)
+                mb.cap(rings[-1], inner_mat, c=tip - up * size * 0.16 + o * 0.6)
 
 
 def face_shape_keys(face, offset):
@@ -147,7 +158,7 @@ def face_shape_keys(face, offset):
 
 
 def finalize(ctx, spec, name, body, extras, rig, face, default_bone, accessories=(),
-             auto=True, preserve_volume=False, smooth_weights=0):
+             auto=True, preserve_volume=False, smooth_weights=0, fade_roots=False):
     """Turn builders + rig into a skinned, shape-keyed, animated entity."""
     lowpoly = ctx.spec_lowpoly(spec)
     levels = 0 if lowpoly else spec.integer("subdiv", ctx.subdiv, 0, 3)
@@ -161,6 +172,9 @@ def finalize(ctx, spec, name, body, extras, rig, face, default_bone, accessories
         for b in loose:
             b.use_deform = True
         rigging.smooth_weights(obj, smooth_weights)
+        rigging.split_sides(obj)
+        if fade_roots:
+            rigging.fade_roots(obj, arm)
         offset = rigging.merge_rigid(obj, arm, extras, default_bone)
         rigging.clean_weights(obj)
     else:

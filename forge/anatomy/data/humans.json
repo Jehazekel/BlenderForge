@@ -55,6 +55,7 @@
               "arm_gap": 0.030, "crotch": [0.92, 0.92], "crotch_drop": 0.014, "chest_min": 0.90, "shoulder_cap": [0.88, 0.76],
               "neck_base": [0.40, 1.45, 1.05], "square": 0.85, "weight_smooth": 3,
               "sway": {"crotch": 0.006, "pelvis": 0.008, "waist": 0.002, "chest": -0.004, "neck": 0.004}},
+    "reference": {"_about": "Approximation, calibrated by measuring the default humanoid mesh against its own skeleton (front view, A-pose, outfit none, hair none). Used only to compare a front reference photo with the skeleton. narrow_at: crown to the narrowest row under the head (the jaw on this mesh), as a fraction of head height; crotch: visible crotch height over the crotch landmark height; hip: hip outline width just above the crotch over the solver hip width.", "narrow_at": 0.946, "crotch": 0.938, "hip": 0.953},
     "arm": {"upper": 0.188, "fore": 0.145, "hand": 0.108, "rest_angle": 40},
     "hand": {"_about": "Approximation (no measured source). palm = palm length / hand length; palm_w and palm_t are half breadth and half thickness in stature units; fingers = index, middle, ring, little length relative to the middle finger; thumb = thumb length / middle finger length; thumb_at = where the thumb leaves the palm, as a fraction of palm length; finger_r = finger radius / palm half breadth.",
              "palm": 0.55, "palm_w": 0.026, "palm_t": 0.011, "fingers": [0.90, 1.0, 0.93, 0.74], "finger_r": 0.23,

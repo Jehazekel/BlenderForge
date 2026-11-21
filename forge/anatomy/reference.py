@@ -32,7 +32,7 @@ class Ref:
 
 # ---- masks ----------------------------------------------------------------------------
 
-def load_mask(path, line=None):
+def load_mask(path, line=None, res=RES):
     """Image -> rows of booleans (top row first). Foreground = not background."""
     import bpy
     try:
@@ -42,8 +42,8 @@ def load_mask(path, line=None):
     w, h = img.size
     if w < 4 or h < 4:
         raise ForgeError("reference image '%s' is empty or unreadable" % path, line)
-    if max(w, h) > RES:
-        s = RES / float(max(w, h))
+    if max(w, h) > res:
+        s = res / float(max(w, h))
         img.scale(max(4, int(w * s)), max(4, int(h * s)))
         w, h = img.size
     px = list(img.pixels[:])
@@ -274,6 +274,8 @@ def add_empties(refs, entity, ctx):
             e.location = Vector((lo.x - (hi.x - lo.x), mid.y - cx * width, mid.z - cy * width * aspect))
         elif ref.view == "front":
             width = (hi.x - lo.x) / fw
+            if getattr(ref, "biped", False):                # A-pose model: match heights, not widths
+                width = (hi.z - lo.z) / ((max(rows) - min(rows) + 1) / mh) / aspect
             e.rotation_euler = (math.radians(90), 0, 0)
             e.location = Vector((mid.x - cx * width, hi.y + (hi.y - lo.y) * 0.3, mid.z - cy * width * aspect))
         else:
@@ -283,3 +285,153 @@ def add_empties(refs, entity, ctx):
         e.parent = entity.root
         col.objects.link(e)
     return []
+
+
+# ---- humans (front view, compared with the solved skeleton) -------------------------------------
+#
+# The human rest pose is an A-pose and a photo can be in any pose, so only measures that do not
+# depend on the arms are always used: crown to the narrowest row under the head (jaw or neck), and crotch height.
+# Arm span needs `reference_pose: tpose`; hip width needs `tpose` or `apose` (arms clear of the hips).
+# The model side is read off the skeleton rather than a raster of the mesh, so fitting is instant.
+
+BIPED_RES = 600           # a head is about 1/8 of the height, so it needs more pixels than an animal
+BIPED_NAMES = {"neck": "crown to jaw/neck", "crotch": "crotch height", "span": "arm span", "hip": "hip width"}
+BIPED_GROUPS = {          # measure -> (profile values it scales, user keys that lock it)
+    "crotch": ((("leg", "thigh"), ("leg", "shank")), ("leg_length", "limb_length", "leg.")),
+    "neck": ((("head", "height"), ("head", "width"), ("head", "depth")), ("head_size", "head.")),
+    "span": ((("arm", "upper"), ("arm", "fore"), ("arm", "hand")), ("arm_length", "limb_length", "arm.")),
+    "hip": ((("breadth", "hip"),), ("breadth.hip", "build")),
+}
+
+
+def measure_biped(mask, pose):
+    """Front silhouette of a standing person -> proportions of its own height."""
+    m = _crop(mask)
+    h, w = len(m), len(m[0])
+    runs = [[x for x, v in enumerate(r) if v] for r in m]
+    cx = round(sum(runs[0]) / max(1, len(runs[0])))            # body centre: middle of the crown
+    out = {}
+    y = h - 1                                                 # crotch: lowest row filled at the centre
+    while y > 0 and not m[y][cx]:
+        y -= 1
+    if y < h - 1:
+        out["crotch"] = (h - 1 - y) / h
+    top = max(1, int(h * 0.30))                               # neck: narrowest centre run below the head
+    widths = []
+    for yy in range(int(h * 0.05), top):
+        r = m[yy]
+        if not r[cx]:
+            continue
+        a = b = cx
+        while a > 0 and r[a - 1]:
+            a -= 1
+        while b < w - 1 and r[b + 1]:
+            b += 1
+        widths.append((b - a + 1, yy))
+    head = best = None                                      # widest head row, then narrowest before the shoulders
+    for wd, yy in widths:
+        if best is None and (head is None or wd >= head):
+            head = wd
+        elif best is None and wd < 0.8 * head:
+            best = (wd, yy)
+        elif best is not None:
+            if wd < best[0]:
+                best = (wd, yy)
+            elif wd > 1.5 * best[0]:
+                break
+    if best is not None:
+        out["neck"] = (best[1] + 0.5) / h
+    if pose == "tpose":
+        out["span"] = w / h
+    if pose in ("tpose", "apose") and "crotch" in out:
+        yy = max(0, int(h - 1 - (out["crotch"] + 0.04) * h))
+        r = m[yy]
+        if r[cx]:
+            a = b = cx
+            while a > 0 and r[a - 1]:
+                a -= 1
+            while b < w - 1 and r[b + 1]:
+                b += 1
+            out["hip"] = (b - a + 1) / h
+    return out
+
+
+def model_biped(profile, sk):
+    """The same proportions read off a solved skeleton (stature units).
+
+    The mesh's visible crotch, narrowest neck and hip outline sit a little off the landmarks;
+    profile['reference'] holds those offsets, calibrated on the default humanoid mesh.
+    """
+    c = profile.get("reference", {})
+    m = sk.m
+    return {"crotch": sk.lm["crotch"].z / sk.scale / m["length"] * c.get("crotch", 1.0),
+            "neck": m["head_to_stature"] * c.get("narrow_at", 1.0),
+            "span": m["arm_span"], "hip": 2 * sk.hip_w / sk.scale / m["length"] * c.get("hip", 1.0)}
+
+
+def biped_refs(spec, base_dir):
+    """Front reference for a human; side and top are not used for humans yet."""
+    for view in ("side", "top"):
+        if spec.get("reference_" + view):
+            warn("reference_%s is not used for humans yet (front view only)" % view, spec.line_of("reference_" + view))
+    path = spec.get("reference_front")
+    if not path:
+        return []
+    if not os.path.isabs(path):
+        path = os.path.join(base_dir, path)
+    if not os.path.isfile(path):
+        raise ForgeError("reference image not found: %s" % path, spec.line_of("reference_front"))
+    pose = spec.choice("reference_pose", ("any", "apose", "tpose"), "any")
+    ref = Ref("front", path, load_mask(path, spec.line_of("reference_front"), BIPED_RES))
+    ref.m = measure_biped(ref.mask, pose)
+    ref.biped = True
+    if not ref.m:
+        raise ForgeError("reference image '%s': no head, neck or legs found in the silhouette" % path,
+                         spec.line_of("reference_front"))
+    info("reference front view: %s (pose %s) -> %s" % (os.path.basename(path), pose,
+         ", ".join("%s %.3f" % (BIPED_NAMES[k], v) for k, v in sorted(ref.m.items()))))
+    return [ref]
+
+
+def fit_biped(profile, height, refs, solve, spec):
+    """Scale whole segment groups until the skeleton matches the reference; user-set groups are left alone."""
+    ref = refs[0]
+    locked = [k for k in ref.m if any(spec.has(u) if not u.endswith(".") else
+                                      any(p.startswith(u) for p in spec.props) for u in BIPED_GROUPS[k][1])]
+    keys = [k for k in sorted(ref.m) if k not in locked]
+    start = {k: profile[s][f] for k in keys for s, f in BIPED_GROUPS[k][0][:1]}
+    for _ in range(12):
+        model = model_biped(profile, solve(profile, height))
+        worst = 0.0
+        for k in keys:
+            r = ref.m[k] / max(model[k], 1e-6)
+            worst = max(worst, abs(r - 1))
+            for s, f in BIPED_GROUPS[k][0]:
+                first = BIPED_GROUPS[k][0][0]
+                base = start[k] if (s, f) == first else None
+                v = profile[s][f] * _clamp(r, 0.8, 1.25) ** 0.8
+                if base is not None:
+                    v = _clamp(v, base * 0.75, base * 1.33)
+                    r_eff = v / profile[s][f]
+                    profile[s][f] = v
+                else:
+                    profile[s][f] *= r_eff
+        if worst < 0.01:
+            break
+    notes = ["%s x%.2f" % (BIPED_NAMES[k], profile[BIPED_GROUPS[k][0][0][0]][BIPED_GROUPS[k][0][0][1]] / start[k])
+             for k in keys if abs(profile[BIPED_GROUPS[k][0][0][0]][BIPED_GROUPS[k][0][0][1]] / start[k] - 1) > 0.005]
+    notes += ["%s kept (set in the input)" % BIPED_NAMES[k] for k in locked]
+    if notes:
+        info("reference fit adjusted: " + ", ".join(notes))
+    return notes
+
+
+def compare_biped(refs, profile, sk):
+    out = []
+    model = model_biped(profile, sk)
+    for key, target in sorted(refs[0].m.items()):
+        got = model[key]
+        diff = (got - target) / target
+        text = "front view %s: model %.3f, reference %.3f (%+.0f%%)" % (BIPED_NAMES[key], got, target, diff * 100)
+        out.append(("warning" if abs(diff) > TOLERANCE else "info", "reference.front.%s" % key, text))
+    return out

@@ -13,11 +13,26 @@ Test file: `out/t_char.md` (one unclothed adult, every animation, `view: sheet`)
 | ~1 s | `$BL --background --python build.py -- in.md out/x.blend --check` | one `anatomy:` line per character (body and face ratios against `classes.json` limits) |
 | ~2 s | `$BL --background x.blend --python tools/check_anims.py 2>&1 \| grep ANIM` | IK reach, lowest bone, sharpest bend per action |
 | ~5 s | `$BL --background x.blend --python tools/check_character.py 2>&1 \| grep CHAR` | rig counts, shape keys, per-action stretch / squash / volume |
+| ~15 s (+35 s sweep) | `$BL --background --python tools/gates.py -- in.md [--sweep]` | every gate above in one go, `GATES: n fail` |
 | ~6 s + image | `--render --view sheet --resolution 960x540 --frame 1` | front, side, 3/4 of body and face in one image |
 
 Look at an image only when the numbers pass and shape is the question.
 `--view face_three_quarter` (or `face`, `face_side`, `front`, `side`, `back`)
 renders one angle; `--focus NAME` frames one character in a crowd.
+
+## Views by problem (live `look`, `mode: "angles"`)
+
+Whole body: `target: ["<Name>"]` (the mesh). Zoom: `target: ["F_<Name>_<bone>"]` with `distance`; `tools/live_view.py` adds one focus point per bone and hides the rig.
+
+| Problem | Views | Shading |
+|---|---|---|
+| Body posture (neck, chest, buttocks) | `left`, `front` | solid |
+| Left/right mirror | `front`, `back` | solid |
+| Species silhouette (frog vs lizard, leggy) | `left`, `three_quarter`, `top` | solid |
+| Hands, grip, held props | `F_<Name>_hand.L` at 0.4 m, `front`, `left` + custom | solid |
+| Teeth, eyes in sockets | `F_<Name>_head` at 0.55 m, `front`, `three_quarter` | material |
+| Joint deformation in an action | `mode: "frames"`, 6 frames, `view: "left"` | solid |
+| Topology, support loops | `front`, `left` | wireframe |
 
 ## Stages
 

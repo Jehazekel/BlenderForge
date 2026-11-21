@@ -46,16 +46,35 @@ def _push_nla(anim_data, action, label, start, mute):
 
 
 class Animator:
-    def __init__(self, arm_obj, name, meta, fps=24, start=1):
+    def __init__(self, arm_obj, name, meta, fps=24, start=1, keyset=None, fill=False):
         self.arm = arm_obj
+        # keyset: bone names this animator owns (all bones when None); a generated
+        # rig (Rigify) keys only its controls, never its ORG/MCH/DEF bones
+        self.keyset = keyset
+        self.fill = fill        # key rest on frames where a moved bone is left unset
         self.name = name
         self.meta = meta
         self.fps = fps
         self.start = start
-        self.rest = {pb.name: pb.bone.matrix_local.to_3x3() for pb in arm_obj.pose.bones}
+        self.rest = {pb.name: pb.bone.matrix_local.to_3x3() for pb in self._bones()}
         self.rest_inv = {n: m.inverted() for n, m in self.rest.items()}
         self.actions = []       # (label, action, loop)
         self._rot, self._loc, self._last = {}, {}, {}
+        # quadruped leg chains: (foot target, chain root bone, reach)
+        self.legs = []
+        for pb in arm_obj.pose.bones:
+            for c in pb.constraints:
+                if c.type == "IK" and c.subtarget.startswith(("h_ik", "f_ik")) and c.chain_count > 0:
+                    chain = [pb.bone]
+                    while len(chain) < c.chain_count and chain[-1].parent:
+                        chain.append(chain[-1].parent)
+                    self.legs.append((c.subtarget, chain[-1].name, sum(b.length for b in chain) * 0.999))
+
+    def _bones(self):
+        bones = self.arm.pose.bones
+        if self.keyset is None:
+            return list(bones)
+        return [bones[n] for n in self.keyset if n in bones]
 
     # -- pose calls used by animation functions ------------------------------
     def rot(self, bone, *steps):
@@ -104,9 +123,30 @@ class Animator:
             qp = self._posed(b.parent.name)[0] if b.parent else Quaternion()
             self._rot[name] = qp.inverted() @ lift @ qp @ self._rot.get(name, Quaternion())
 
+    def reach_down(self):
+        """Lower the hips just enough that every foot reaches its IK target.
+        A target out of reach leaves the leg straight and the foot in the air
+        (a trunk pitch or a bob carried the hip or shoulder too high), so the
+        body comes down instead of the target moving. Horizontal overreach is
+        left alone: no drop can fix it."""
+        if "hips" not in self.rest or not self.legs or self.meta.get("sprawl"):
+            return
+        drop = 0.0
+        for target, root, reach in self.legs:
+            if target not in self.rest or root not in self.rest:
+                continue
+            r = self._posed(root)[1]
+            t = self._posed(target)[1]
+            flat = (t.x - r.x) ** 2 + (t.y - r.y) ** 2
+            if flat >= reach * reach:
+                continue
+            drop = max(drop, (r.z - t.z) - math.sqrt(reach * reach - flat))
+        if drop > 0.0:
+            self.loc("hips", (0, 0, -drop))
+
     # -- baking -------------------------------------------------------------
     def _reset(self):
-        for pb in self.arm.pose.bones:
+        for pb in self._bones():
             pb.location = (0, 0, 0)
             pb.rotation_mode = "QUATERNION"
             pb.rotation_quaternion = (1, 0, 0, 0)
@@ -139,11 +179,28 @@ class Animator:
         ad = self.arm.animation_data or self.arm.animation_data_create()
         ad.action = action
         self._last = {}
+        # every bone the action never moves is keyed at rest, so the action owns
+        # its whole pose and never inherits feet or rolls from the one played before
+        moved, turned = set(), set()
+        per_frame = []
         for f in range(frames + 1):
             fn(self, self.meta, f / frames)
+            self.reach_down()
             if self.meta.get("tail"):
                 self.keep_above(self.meta["tail"], self.meta.get("tail_floor", 0.0))
+            moved.update(self._loc)
+            turned.update(self._rot)
+            per_frame.append((set(self._loc), set(self._rot)))
             self._key(self.start + f)
+        if self.fill:
+            self._fill_rest(action, per_frame, moved, turned)
+        for pb in self._bones():
+            if pb.name not in moved:
+                pb.location = (0, 0, 0)
+                pb.keyframe_insert("location", frame=self.start, group=pb.name)
+            if pb.name not in turned:
+                pb.rotation_quaternion = (1, 0, 0, 0)
+                pb.keyframe_insert("rotation_quaternion", frame=self.start, group=pb.name)
         try:
             action.use_frame_range = True
             action.frame_start = self.start
@@ -156,6 +213,24 @@ class Animator:
                 fc.modifiers.new("CYCLES")
         self.actions.append((label, action, loop))
         return action
+
+    def _fill_rest(self, action, per_frame, moved, turned):
+        """A bone left unset on a frame means rest, not 'interpolate across':
+        key it there so cycles and holds stay exact."""
+        bones = self.arm.pose.bones
+        curves = {(fc.data_path, fc.array_index): fc for fc in action_fcurves(action)}
+        for f, (locs, rots) in enumerate(per_frame):
+            frame = self.start + f
+            for name in moved - locs:
+                pb = bones[name]
+                pb.location = (0, 0, 0)
+                pb.keyframe_insert("location", frame=frame, group=name)
+            for name in turned - rots:
+                fc = curves.get(('pose.bones["%s"].rotation_quaternion' % name, 0))
+                w = fc.evaluate(frame) if fc else 1.0
+                pb = bones[name]
+                pb.rotation_quaternion = (1, 0, 0, 0) if w >= 0 else (-1, 0, 0, 0)
+                pb.keyframe_insert("rotation_quaternion", frame=frame, group=name)
 
     def finish(self):
         """Park every action on its own NLA track; the first one plays."""
@@ -318,11 +393,36 @@ def _quad_legs(an, m, p, phases, stride, lift):
         an.rot("%s_ik.%s" % (pair, s), ("X", min(0.55 * swing, flick)))
 
 
+# Shared quadruped clip amplitudes (approximation, tuned against the deform gate
+# in tools/check_character.py on rabbit, toy cat and wolf; earlier values in brackets).
+SIT_DROP = 0.42        # hip drop, share of leg height [0.62]
+SIT_PITCH_MAX = 0.60   # sin of the largest trunk pitch when sitting [0.95, i.e. 72 deg]
+RUN_STRIDE = 0.40      # [0.46]
+RUN_LIFT = 0.24        # [0.30]
+JUMP_CROUCH = 0.18     # [0.32]
+JUMP_PITCH = 0.22      # take-off pitch, rad [0.30]
+JUMP_LAND = 0.12       # [0.22]
+JUMP_REACH = 0.08      # fore feet reach forward at take-off, share of leg height [0.15]
+RUN_BOB = 0.10         # largest run bob, share of leg height [none: 0.04 * size]
+SIT_FORE_FOLLOW = -1.0 # share of the shoulder shift the fore feet follow [0]
+
+
+# Sprawled bodies (lizards, frogs) hang between the legs and were not re-tuned:
+# they keep the earlier amplitudes.
+_SPRAWL_AMP = {"RUN_BOB": 1e9, 'SIT_DROP': 0.62, 'SIT_PITCH_MAX': 0.95, 'RUN_STRIDE': 0.46, 'RUN_LIFT': 0.3, 'JUMP_CROUCH': 0.32, 'JUMP_PITCH': 0.3, 'JUMP_LAND': 0.22, 'JUMP_REACH': 0.15, 'SIT_FORE_FOLLOW': 0.0}
+
+
+def _amp(m, name):
+    return _SPRAWL_AMP[name] if m.get("sprawl") else globals()[name]
+
+
 def quad_walk(an, m, p):
+    g = m.get("gait", {})
     _quad_legs(an, m, p, {("h", "L"): 0.0, ("f", "L"): 0.25, ("h", "R"): 0.5, ("f", "R"): 0.75},
-               0.24, 0.13)
+               g.get("stride", 0.24), g.get("lift", 0.13))
     s1 = math.sin(TAU * p)
-    an.loc("hips", (0, 0, -0.04 * m["leg_h"] + 0.012 * m["size"] * math.cos(2 * TAU * p)))
+    bob = min(0.012 * m["size"], 0.03 * m["leg_h"])     # short legs: the bob never lifts hips above rest
+    an.loc("hips", (0, 0, -g.get("crouch", 0.04) * m["leg_h"] + bob * math.cos(2 * TAU * p)))
     an.rot("hips", ("Z", 0.05 * s1))
     an.rot("spine1", ("Z", -0.05 * s1))
     an.rot("spine2", ("Z", -0.05 * s1), ("X", 0.02 * math.cos(2 * TAU * p)))
@@ -333,9 +433,10 @@ def quad_walk(an, m, p):
 
 def quad_run(an, m, p):
     _quad_legs(an, m, p, {("f", "L"): 0.0, ("f", "R"): 0.1, ("h", "L"): 0.5, ("h", "R"): 0.6},
-               0.46, 0.30)
+               _amp(m, "RUN_STRIDE"), _amp(m, "RUN_LIFT"))
     a = TAU * p
-    an.loc("hips", (0, 0, -0.06 * m["leg_h"] + 0.04 * m["size"] * math.sin(a + 0.6)))
+    bob = min(0.04 * m["size"], _amp(m, "RUN_BOB") * m["leg_h"])    # short legs: the bob stays within reach
+    an.loc("hips", (0, 0, -0.06 * m["leg_h"] + bob * math.sin(a + 0.6)))
     an.rot("hips", ("X", 0.10 * math.sin(a + 1.2)))
     an.rot("spine1", ("X", -0.10 * math.sin(a + 1.2)))
     an.rot("spine2", ("X", -0.12 * math.sin(a + 1.9)))
@@ -360,8 +461,8 @@ def quad_idle(an, m, p):
 
 def quad_sit(an, m, p):
     e = smooth(p / 0.4)
-    drop = m["leg_h"] * 0.62 * e
-    ang = math.asin(min(0.95, drop / max(m["torso"], 1e-3)))
+    drop = m["leg_h"] * _amp(m, "SIT_DROP") * e
+    ang = math.asin(min(_amp(m, "SIT_PITCH_MAX"), drop / max(m["torso"], 1e-3)))
     an.loc("hips", (0, m["leg_h"] * 0.10 * e, -drop))
     an.rot("hips", ("X", -ang))
     an.rot("spine2", ("X", -0.10 * e))
@@ -369,6 +470,8 @@ def quad_sit(an, m, p):
     an.rot("head", ("X", ang * 0.45))
     for s, sg in SIDES:
         an.loc("h_ik." + s, (sg * m["size"] * 0.02 * e, -m["leg_h"] * 0.28 * e, 0))
+        # pitching the trunk carries the shoulders back: the fore feet follow
+        an.loc("f_ik." + s, (0, m["torso"] * (1 - math.cos(ang)) * _amp(m, "SIT_FORE_FOLLOW"), 0))
     for i, b in enumerate(m.get("tail", [])):
         an.rot(b, ("X", ang * (0.9 if i == 0 else 0.15)),
                ("Z", 0.25 * e * math.sin(TAU * p * 3 - i * 0.7)))
@@ -379,25 +482,25 @@ def quad_jump(an, m, p):
     hips, front, hind, pitch = 0.0, 0.0, 0.0, 0.0
     if p < 0.3:
         c = smooth(p / 0.3)
-        hips, pitch = -0.32 * lh * c, 0.10 * c
+        hips, pitch = -_amp(m, "JUMP_CROUCH") * lh * c, 0.10 * c
     elif p < 0.4:
         c = smooth((p - 0.3) / 0.1)
-        hips, pitch, front = -0.32 * lh * (1 - c), 0.10 - 0.40 * c, 0.3 * lh * c
+        hips, pitch, front = -_amp(m, "JUMP_CROUCH") * lh * (1 - c), 0.10 - (0.10 + _amp(m, "JUMP_PITCH")) * c, 0.3 * lh * c
     elif p < 0.76:
         u = (p - 0.4) / 0.36
         h = 4 * u * (1 - u) * 0.8 * lh
-        hips, pitch = h, -0.30 + 0.55 * u
+        hips, pitch = h, -_amp(m, "JUMP_PITCH") + (_amp(m, "JUMP_PITCH") + 0.25) * u
         front = h + 0.3 * lh * (1 - u)
         hind = h + 0.25 * lh * math.sin(math.pi * u)
     else:
         v = (p - 0.76) / 0.24
-        hips = -0.22 * lh * math.sin(math.pi * v)
+        hips = -_amp(m, "JUMP_LAND") * lh * math.sin(math.pi * v)
         pitch = 0.25 * (1 - smooth(v))
     an.loc("hips", (0, 0, hips))
     an.rot("hips", ("X", pitch))
     an.rot("neck", ("X", -pitch * 0.6))
     for s, sg in SIDES:
-        an.loc("f_ik." + s, (0, -0.15 * lh * (front > 0), front))
+        an.loc("f_ik." + s, (0, -_amp(m, "JUMP_REACH") * lh * (front > 0), front))
         an.loc("h_ik." + s, (0, 0.2 * lh * (hind > 0), hind))
     for i, b in enumerate(m.get("tail", [])):
         an.rot(b, ("X", -pitch * 0.5))
@@ -597,6 +700,9 @@ def animate(arm_obj, rig, spec, ctx):
         if loop_text is not None:
             loop = spec.flag("loop", loop)
         n = spec.integer("cycle_frames", 0, 2, 2000) if cycle else 0
+        period = rig.meta.get("gait", {}).get("period") if name == "walk" else None
+        if not n and period:                        # profile walk cycle length in seconds
+            n = max(4, int(round(period * ctx.fps / speed)))
         if not n:
             n = max(4, int(round(frames * ctx.fps / 24.0 / speed)))
         an.bake(name, fn, n, loop)
